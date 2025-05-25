@@ -28,6 +28,6 @@ uvicorn main:app --reload
 
 ## Features
 
-- Syncs data from Notion database to local SQLite
+- Syncs data from Notion database (write/update) to local SQLite (read only)
 - FastAPI backend
 - React + Tailwind frontend (coming soon) 

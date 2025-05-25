@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 import models
 from database import get_db, engine
-from notion_client import get_expenses
+from notion_connector import get_expenses
 from datetime import datetime
 
 app = FastAPI(title="Expense Tracker API")

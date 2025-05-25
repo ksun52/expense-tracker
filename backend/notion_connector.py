@@ -45,4 +45,4 @@ def get_expenses():
         return expenses
     except Exception as e:
         print(f"Error fetching expenses from Notion: {str(e)}")
-        return [] 
+        return []
