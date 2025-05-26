@@ -3,13 +3,12 @@ from datetime import datetime, UTC
 import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 import logging
 from config import *
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 # SQLite setup
@@ -47,66 +46,90 @@ class NotionConnector:
     def fetch_notion_expenses(self):
         """Fetch all expenses from Notion database."""
         try:
-            response = self.notion.databases.query(
-                database_id=NOTION_DATABASE_ID,
-                sorts=[{
-                    "property": "Date",
-                    "direction": "descending"
-                }]
-            )
-            
             expenses_list = []
-            for page in response["results"]:
-                properties = page["properties"]
-                
-                # Extract expense data from Notion properties
-
-                # First check the contents of the properties
-                name = properties.get("Name", {}).get("title", [{}])[0].get("text", {})
-                amount = properties.get("Amount", {})
-                date_str = properties.get("Date", {}).get("date", {})
-                method = properties.get("Method", {}).get("select", {})
-                category = properties.get("Category", {}).get("select", {})
-                sub_category = properties.get("Subcategory", {}).get("select", {})
-
-                # Then we can extract the value of the property if the content exists 
-                if name is not None:
-                    name = name.get("content", "")
-                if amount is not None:
-                    amount = amount.get("number", 0)
-                if date_str is not None:
-                    date_str = date_str.get("start", "")
-                if method is not None:
-                    method = method.get("name", "")
-                if category is not None:
-                    category = category.get("name", "")
-                if sub_category is not None:
-                    sub_category = sub_category.get("name", "")
-
-                logger.debug(f"retrieved expense with name: {name}")
-                    
-                # Convert date string to datetime object
-                date = datetime.fromisoformat(date_str) if date_str else None
-                
-                # add expense dict to running list 
-                expense = {
-                    "notion_id": page["id"],
-                    "name": name,
-                    "amount": amount,
-                    "date": date,
-                    "method": method,
-                    "category": category,
-                    "sub_category": sub_category
-                }
-
-                # check for missing values and raise warning only 
-                for key, value in expense.items():
-                    if value is None:
-                        logger.warning(f"Missing value for key: {key} on expense {expense.get('name')} - ensure this is filled out in Notion")
-                        
-                expenses_list.append(expense)
+            has_more = True
+            start_cursor = None
             
+            while has_more:
+                # Prepare query parameters
+                query_params = {
+                    "database_id": NOTION_DATABASE_ID,
+                    "sorts": [{
+                        "property": "Date",
+                        "direction": "descending"
+                    }],
+                    "page_size": 100  # Maximum allowed by Notion
+                }
+                
+                # Add start_cursor if we have one
+                if start_cursor:
+                    query_params["start_cursor"] = start_cursor
+                
+                # Make the API call
+                response = self.notion.databases.query(**query_params)
+                
+                # Process the results
+                for page in response["results"]:
+                    properties = page["properties"]
+
+                    # skip empty rows by rejecting those with no name 
+                    if not properties.get("Name", {}).get("title", [{}]):
+                        logger.warning(f"Skipping empty row with ID: {page['id']}")
+                        continue
+
+                    # Extract expense data from Notion properties
+                    # First get the content inside of each property and check if it is empty 
+                    name = properties.get("Name", {}).get("title", [{}])[0].get("text", {})
+                    amount = properties.get("Amount", {})
+                    date_str = properties.get("Date", {}).get("date", {})
+                    method = properties.get("Method", {}).get("select", {})
+                    category = properties.get("Category", {}).get("select", {})
+                    sub_category = properties.get("Subcategory", {}).get("select", {})
+                    
+                    # now we can actualy extract the value that is inside the property if it exists 
+                    if name is not None: 
+                        name = name.get("content", "")
+                    if amount is not None: 
+                        amount = amount.get("number", 0)
+                    if date_str is not None: 
+                        date_str = date_str.get("start", "")
+                    if method is not None: 
+                        method = method.get("name", "")
+                    if category is not None: 
+                        category = category.get("name", "")
+                    if sub_category is not None: 
+                        sub_category = sub_category.get("name", "")
+
+                    # Convert date string to datetime object
+                    date = datetime.fromisoformat(date_str) if date_str else None
+                    
+                    expense = {
+                        "notion_id": page["id"],
+                        "name": name,
+                        "amount": amount,
+                        "date": date,
+                        "method": method,
+                        "category": category,
+                        "sub_category": sub_category
+                    }
+                    
+                    # check for missing values and raise warning only 
+                    for key, value in expense.items():
+                        if value is None and key != "sub_category":
+                            logger.warning(f"Missing value for key: '{key}' for expense: '{expense['name']}' - ensure this is filled out in Notion")
+                            
+                    expenses_list.append(expense)
+                
+                # Check if there are more pages
+                has_more = response.get("has_more", False)
+                start_cursor = response.get("next_cursor")
+                
+                # Log progress
+                logger.info(f"Fetched {len(expenses_list)} expenses so far...")
+            
+            logger.info(f"Total expenses fetched: {len(expenses_list)}")
             return expenses_list
+            
         except Exception as e:
             logger.error(f"Error fetching expenses from Notion: {str(e)}")
             raise
