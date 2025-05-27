@@ -1,7 +1,5 @@
 from notion_client import Client
 from datetime import datetime, UTC
-import os
-from dotenv import load_dotenv
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
 from sqlalchemy.orm import sessionmaker, declarative_base
 import logging
@@ -28,7 +26,7 @@ class Expenses(Base):
     amount = Column(Float, index=True, default=0)
     date = Column(DateTime, index=True, default=lambda: datetime.now(UTC))
     category = Column(String, index=True, default="N/A")
-    sub_category = Column(String, default="N/A")
+    sub_category = Column(String, default=lambda context: context.get_current_parameters()['category'])
     method = Column(String, default="N/A")
 
     # internal metadata
@@ -117,7 +115,7 @@ class NotionConnector:
                     for key, value in expense.items():
                         if value is None and key != "sub_category":
                             logger.warning(f"Missing value for key: '{key}' for expense: '{expense['name']}' - ensure this is filled out in Notion")
-                            
+
                     expenses_list.append(expense)
                 
                 # Check if there are more pages
