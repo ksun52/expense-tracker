@@ -1,18 +1,19 @@
-import { Button } from '@/components/ui/button'
-import { Button as Button2 } from '@headlessui/react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './components/layout/Layout';
+import Home from './pages/Home';
 import './App.css'
 
 function App() {
-
   return (
-    <>
-      My Finance Tracker App
-      <div className="flex flex-col items-center justify-center min-h-svh">
-        <Button>Click me</Button>
-        <Button2>Click me</Button2>
-      </div>
-    </>
-  )
+    <Router>
+      {/* <Layout> */}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {/* Add more routes as needed */}
+        </Routes>
+      {/* </Layout> */}
+    </Router>
+  );
 }
 
-export default App
+export default App;
