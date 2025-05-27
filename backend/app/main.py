@@ -20,6 +20,7 @@ app = FastAPI(
 # TODO: add production origins (accepted frontend origins that access backend)
 origins = [
     "http://localhost:3000",
+    "http://localhost:5173",
 ]
 
 # Set up CORS middleware
@@ -31,8 +32,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include API router
-# app.include_router(api_router, prefix=settings.API_V1_STR)
+# Include API router - mount all routes under /api/v1
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 async def root():
