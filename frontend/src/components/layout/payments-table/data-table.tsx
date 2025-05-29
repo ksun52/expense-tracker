@@ -1,7 +1,8 @@
 "use client"
 import * as React from "react"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { DataTablePagination } from "@/components/ui/custom-table/pagination-control"
+import { DataTableViewOptions } from "@/components/ui/custom-table/column-visibility"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -23,13 +24,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -75,7 +69,7 @@ export default function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               Columns
@@ -102,7 +96,8 @@ export default function DataTable<TData, TValue>({
                 )
               })}
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
+        <DataTableViewOptions table={table} />
       </div>
       <div className="rounded-md border">
         <Table>
@@ -148,28 +143,7 @@ export default function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-      </div>
-      <div className="flex-1 text-sm text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row{table.getFilteredRowModel().rows.length === 1 ? "" : "s"} selected.
-      </div>
+      <DataTablePagination table={table} />
     </div>
   )
 }
