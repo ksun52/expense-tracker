@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import { MoreHorizontal } from "lucide-react"
  
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -20,9 +20,12 @@ import {
 // You can use a Zod schema here if you want.
 export type Payment = {
   id: string
+  name: string
   amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
+  date: Date
+  category: string
+  method: string
+  subcategory: string
 }
 
 export const columns: ColumnDef<Payment>[] = [
@@ -49,15 +52,9 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "status",
+    accessorKey: "name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
-    ),
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email" />
+      <DataTableColumnHeader column={column} title="Name" />
     ),
   },
   {
@@ -74,6 +71,24 @@ export const columns: ColumnDef<Payment>[] = [
  
       return <div className="text-right font-medium">{formatted}</div>
     },
+  },
+  {
+    accessorKey: "category",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Category" />
+    ),
+  },
+  {
+    accessorKey: "subcategory",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Subcategory" />
+    ),
+  },
+  {
+    accessorKey: "method",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Method" />
+    ),
   },
   {
     id: "actions",
