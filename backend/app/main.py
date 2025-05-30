@@ -7,8 +7,12 @@ from typing import List
 
 from app.core.config import get_settings
 from app.api.v1.router import api_router
+from app.database.init_db import init_db
 
 settings = get_settings()
+
+# Initialize database
+init_db()
 
 # unsure if all these parameters are needed. Can just work with app=FastAPI()
 app = FastAPI(

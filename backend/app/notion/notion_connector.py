@@ -1,40 +1,14 @@
 from notion_client import Client
 from datetime import datetime, UTC
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
-from sqlalchemy.orm import sessionmaker, declarative_base
+
 import logging
-from config import *
+from app.notion.config import *
+from app.database.base import Base, SessionLocal
+from app.models.expenses import Expenses
 
 # Set up logging
 logging.basicConfig(level=LOG_LEVEL)
 logger = logging.getLogger(__name__)
-
-# SQLite setup
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
-
-class Expenses(Base):
-    __tablename__ = "Expenses"
-
-    # internal id trackers 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    notion_id = Column(String, unique=True, nullable=True)
-    
-    # Expense details the user sees
-    name = Column(String, default="N/A")
-    amount = Column(Float, index=True, default=0)
-    date = Column(DateTime, index=True, default=lambda: datetime.now(UTC))
-    category = Column(String, index=True, default="N/A")
-    sub_category = Column(String, default=lambda context: context.get_current_parameters()['category'])
-    method = Column(String, default="N/A")
-
-    # internal metadata
-    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
-    updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
-
-# Create tables
-Base.metadata.create_all(bind=engine)
 
 class NotionConnector:
     def __init__(self):
@@ -111,10 +85,29 @@ class NotionConnector:
                         "sub_category": sub_category
                     }
                     
-                    # check for missing values and raise warning only 
-                    for key, value in expense.items():
-                        if value is None and key != "sub_category":
-                            logger.warning(f"Missing value for key: '{key}' for expense: '{expense['name']}' - ensure this is filled out in Notion")
+                    # check for missing values and add default + raise warning
+                    value_missing = False
+                    if expense["name"] is None:
+                        expense["name"] = "N/A"
+                        value_missing = True
+                    if expense["amount"] is None:
+                        expense["amount"] = 0
+                        value_missing = True
+                    if expense["date"] is None:
+                        expense["date"] = datetime.now(UTC)
+                        value_missing = True
+                    if expense["category"] is None:
+                        expense["category"] = "N/A"
+                        value_missing = True
+                    if expense["method"] is None:
+                        expense["method"] = "N/A"
+                        value_missing = True
+                    if expense["sub_category"] is None:
+                        expense["sub_category"] = expense["category"]
+                        value_missing = True
+
+                    if value_missing:
+                        logger.warning(f"Missing one or more values for expense: '{expense['name']}' - ensure this is filled out in Notion")
 
                     expenses_list.append(expense)
                 
