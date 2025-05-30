@@ -8,7 +8,7 @@ from typing import List
 from app.core.config import get_settings
 from app.api.v1.router import api_router
 from app.database.init_db import init_db
-
+from app.notion.notion_connector import sync_expenses
 settings = get_settings()
 
 # Initialize database

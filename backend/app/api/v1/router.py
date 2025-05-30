@@ -1,9 +1,7 @@
 from fastapi import APIRouter
-# from app.api.v1.endpoints import expenses, users
-from app.api.v1.endpoints import table
+from app.api.v1.endpoints import table, sync_db
 
 api_router = APIRouter()
 
-# api_router.include_router(users.router, prefix="/users", tags=["users"])
-# api_router.include_router(expenses.router, prefix="/expenses", tags=["expenses"])
 api_router.include_router(table.router, prefix="/table", tags=["table"]) 
+api_router.include_router(sync_db.router, prefix="/sync", tags=["sync"])
