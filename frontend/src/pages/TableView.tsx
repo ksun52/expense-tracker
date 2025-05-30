@@ -1,11 +1,12 @@
 import { Payment, columns } from "../components/layout/payments-table/columns"
 import DataTable from "../components/layout/payments-table/data-table"
 import { useEffect, useState } from "react"
-import paymentData from "../data/payment_data.json"
+import SyncButton from "@/components/layout/payments-table/sync-button"
 
 async function getData(): Promise<Payment[]> {
-  // Fetch data from your API here.
-  return paymentData.map(payment => ({
+  const response = await fetch('http://localhost:8000/api/v1/table')
+  const data = await response.json()
+  return data.map((payment: any) => ({
     ...payment,
     date: new Date(payment.date)
   })) as Payment[]
@@ -20,7 +21,12 @@ export default function TableView() {
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
+      <div className="mb-4">
+        <SyncButton />
+      </div>
+      <div className="w-full overflow-x-auto">
+        <DataTable columns={columns} data={data} />
+      </div>
     </div>
   )
 }

@@ -19,13 +19,16 @@ import {
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Payment = {
-  id: string
+  id: number
+  notion_id: string | null
   name: string
   amount: number
   date: Date
   category: string
+  sub_category: string
   method: string
-  subcategory: string
+  created_at: Date
+  updated_at: Date
 }
 
 export const columns: ColumnDef<Payment>[] = [
@@ -79,7 +82,7 @@ export const columns: ColumnDef<Payment>[] = [
     ),
   },
   {
-    accessorKey: "subcategory",
+    accessorKey: "sub_category",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Subcategory" />
     ),
@@ -106,7 +109,7 @@ export const columns: ColumnDef<Payment>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(payment.id.toString())}
             >
               Copy payment ID
             </DropdownMenuItem>
@@ -117,5 +120,6 @@ export const columns: ColumnDef<Payment>[] = [
         </DropdownMenu>
       )
     },
+    size: 50,
   },
 ]
