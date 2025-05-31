@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Dict
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, extract
 from app.database.session import get_db
@@ -39,4 +39,6 @@ def get_category_summary(
         
         return category_totals
     except ValueError:
-        raise ValueError("Invalid month format. Please use YYYY-MM format.") 
+        raise HTTPException(status_code=400, detail="Invalid month format. Please use YYYY-MM format.") 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
