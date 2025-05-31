@@ -35,8 +35,8 @@ const items = [
     icon: Table,
   },
   {
-    title: "Inbox",
-    url: "#",
+    title: "Charts",
+    url: "/charts",
     icon: Inbox,
   },
   {

@@ -23,7 +23,7 @@ export type Payment = {
   notion_id: string | null
   name: string
   amount: number
-  date: Date
+  date: string
   category: string
   sub_category: string
   method: string
@@ -58,6 +58,12 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: "name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
+    ),
+  },
+  {
+    accessorKey: "date",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Date" />
     ),
   },
   {

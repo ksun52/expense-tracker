@@ -8,7 +8,11 @@ async function getData(): Promise<Payment[]> {
   const data = await response.json()
   return data.map((payment: any) => ({
     ...payment,
-    date: new Date(payment.date)
+    date: new Date(payment.date).toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    })
   })) as Payment[]
 }
 
