@@ -1,25 +1,10 @@
 import { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, LabelList } from 'recharts';
-import { TrendingUp } from "lucide-react"
-import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import {
-    ChartConfig,
-    ChartContainer,
-    ChartLegend,
-    ChartLegendContent,
-    ChartTooltip,
-    ChartTooltipContent,
-    CustomExpenseChartTooltipContent,
-} from "@/components/ui/chart"
+import { Card } from "@/components/ui/card"
+import { ChartConfig } from "@/components/ui/chart"
 import { format, subMonths, addMonths } from 'date-fns';
+import { ChartHeader } from '@/components/ui/custom-chart/ChartHeader';
+import { ChartFooter } from '@/components/ui/custom-chart/ChartFooter';
+import { ChartContent } from '@/components/ui/custom-chart/ChartContent';
 
 interface CategoryData {
     category: string;
@@ -89,59 +74,26 @@ export default function ChartView() {
         setSelectedMonth(prev => addMonths(prev, 1));
     };
 
+    const totalAmount = chartData.reduce((sum, item) => sum + item.amount, 0);
+
     return (
-      <div className="container mx-auto p-4">
-        <Card className="flex flex-col w-full">
-          <CardHeader className="items-center pb-2">
-            <CardTitle>Spending by Category</CardTitle>
-            <CardDescription>{format(selectedMonth, 'MMMM yyyy')}</CardDescription>
-            <div className="flex items-center gap-4 mt-4">
-                <Button variant="outline" onClick={handlePreviousMonth} className="w-32">
-                    Previous Month
-                </Button>
-                <span className="text-lg font-medium">
-                    {format(selectedMonth, 'MMMM yyyy')}
-                </span>
-                <Button variant="outline" onClick={handleNextMonth} className="w-32">
-                    Next Month
-                </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="flex-1 pb-0">
-            <ChartContainer
-              config={chartConfig}
-              className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square h-[350px] pb-0"
-            >
-              <PieChart>
-                <ChartTooltip 
-                  cursor={false} 
-                  content={({ active, payload }) => (
-                    <CustomExpenseChartTooltipContent active={active ?? false} payload={payload ?? []} />
-                  )}
+        <div className="container mx-auto p-4">
+            <Card className="flex flex-col w-full">
+                <ChartHeader
+                    title="Spending by Category"
+                    selectedMonth={selectedMonth}
+                    onPreviousMonth={handlePreviousMonth}
+                    onNextMonth={handleNextMonth}
                 />
-                <Pie 
-                  data={chartData} 
-                  dataKey="amount" 
-                  nameKey="category"
-                  label={({ amount }) => amount.toFixed(2)}
-                  labelLine={true}
+                <ChartContent
+                    chartData={chartData}
+                    chartConfig={chartConfig}
                 />
-                <ChartLegend
-                  content={<ChartLegendContent nameKey="category" />}
-                  className="-translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"
+                <ChartFooter
+                    totalAmount={totalAmount}
+                    selectedMonth={selectedMonth}
                 />
-              </PieChart>
-            </ChartContainer>
-          </CardContent>
-          <CardFooter className="flex-col gap-2 text-sm pt-2">
-            <div className="flex items-center gap-2 leading-none font-medium">
-                Total Spending: ${chartData.reduce((sum, item) => sum + item.amount, 0).toFixed(2)}
-            </div>
-            <div className="text-muted-foreground leading-none">
-                Showing spending breakdown for {format(selectedMonth, 'MMMM yyyy')}
-            </div>
-          </CardFooter>
-        </Card>
-      </div>
+            </Card>
+        </div>
     );
 }
