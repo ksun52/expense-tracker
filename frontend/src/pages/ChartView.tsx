@@ -17,6 +17,7 @@ import {
     ChartLegendContent,
     ChartTooltip,
     ChartTooltipContent,
+    CustomExpenseChartTooltipContent,
 } from "@/components/ui/chart"
 import { format, subMonths, addMonths } from 'date-fns';
 
@@ -112,7 +113,12 @@ export default function ChartView() {
               className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square h-[350px] pb-0"
             >
               <PieChart>
-                <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                <ChartTooltip 
+                  cursor={false} 
+                  content={({ active, payload }) => (
+                    <CustomExpenseChartTooltipContent active={active ?? false} payload={payload ?? []} />
+                  )}
+                />
                 <Pie 
                   data={chartData} 
                   dataKey="amount" 

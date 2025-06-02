@@ -246,6 +246,33 @@ function ChartTooltipContent({
   )
 }
 
+function CustomExpenseChartTooltipContent({
+  active,
+  payload,
+}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> & {
+  active: boolean
+  payload: any[]
+}) {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="rounded-lg border bg-background p-4 shadow-sm">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col">
+            <span className="text-sm uppercase text-muted-foreground">
+              {data.category}
+            </span>
+            <span className="text-xl font-bold">
+              ${data.amount.toFixed(2)}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return null;
+}
+
 const ChartLegend = RechartsPrimitive.Legend
 
 function ChartLegendContent({
@@ -345,6 +372,7 @@ export {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  CustomExpenseChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
   ChartStyle,
