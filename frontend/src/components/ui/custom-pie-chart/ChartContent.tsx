@@ -25,7 +25,7 @@ export function ChartContent({ chartData, chartConfig }: ChartContentProps) {
         <CardContent className="flex-1 pb-0">
             <ChartContainer
                 config={chartConfig}
-                className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square h-[350px] pb-0"
+                className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square min-h-[400px] w-full max-w-2xl pb-0"
             >
                 <PieChart>
                     <ChartTooltip 
