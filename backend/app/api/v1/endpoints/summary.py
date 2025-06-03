@@ -42,3 +42,32 @@ def get_category_summary(
         raise HTTPException(status_code=400, detail="Invalid month format. Please use YYYY-MM format.") 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.get("/monthly")
+def get_monthly_summary(
+    db: Session = Depends(get_db)
+) -> Dict[str, float]:
+    """
+    Get total spending by month.
+    """
+    try:
+        # Query the database for monthly totals
+        results = (
+            db.query(
+                extract('year', Expenses.date).label('year'),
+                extract('month', Expenses.date).label('month'),
+                func.sum(Expenses.amount).label('total')
+            )
+            .group_by('year', 'month')
+            .all()
+        )
+
+        # Convert results to dictionary
+        monthly_totals = {
+            f"{row.year}-{row.month:02d}": float(row.total)
+            for row in results
+        }
+
+        return monthly_totals
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
