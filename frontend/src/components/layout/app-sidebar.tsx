@@ -40,8 +40,8 @@ const items = [
     icon: Inbox,
   },
   {
-    title: "Calendar",
-    url: "#",
+    title: "Graphs",
+    url: "/graph",
     icon: Calendar,
   },
   {
