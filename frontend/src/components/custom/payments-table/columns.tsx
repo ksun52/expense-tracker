@@ -5,7 +5,7 @@ import { MoreHorizontal } from "lucide-react"
  
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { DataTableColumnHeader } from "@/components/ui/custom-table/column-header"
+import { DataTableColumnHeader } from "@/components/custom/custom-table/column-header"
 
 import {
   DropdownMenu,

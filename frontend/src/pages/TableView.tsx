@@ -1,7 +1,7 @@
-import { Payment, columns } from "../components/layout/payments-table/columns"
-import DataTable from "../components/layout/payments-table/data-table"
+import { Payment, columns } from "../components/custom/payments-table/columns"
+import DataTable from "../components/custom/payments-table/data-table"
 import { useEffect, useState } from "react"
-import SyncButton from "@/components/layout/payments-table/sync-button"
+import SyncButton from "@/components/custom/payments-table/sync-button"
 
 async function getData(): Promise<Payment[]> {
   const response = await fetch('http://localhost:8000/api/v1/table')

@@ -1,8 +1,8 @@
 "use client"
 import * as React from "react"
 import { Input } from "@/components/ui/input"
-import { DataTablePagination } from "@/components/ui/custom-table/pagination-control"
-import { DataTableViewOptions } from "@/components/ui/custom-table/column-visibility"
+import { DataTablePagination } from "@/components/custom/custom-table/pagination-control"
+import { DataTableViewOptions } from "@/components/custom/custom-table/column-visibility"
 import {
   ColumnDef,
   ColumnFiltersState,

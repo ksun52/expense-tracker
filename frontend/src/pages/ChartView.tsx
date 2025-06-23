@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card"
 import { ChartConfig } from "@/components/ui/chart"
 import { format, subMonths, addMonths } from 'date-fns';
-import { ChartHeader } from '@/components/ui/custom-pie-chart/ChartHeader';
-import { ChartFooter } from '@/components/ui/custom-pie-chart/ChartFooter';
-import { ChartContent } from '@/components/ui/custom-pie-chart/ChartContent';
+import { ChartHeader } from '@/components/custom/custom-pie-chart/ChartHeader';
+import { ChartFooter } from '@/components/custom/custom-pie-chart/ChartFooter';
+import { ChartContent } from '@/components/custom/custom-pie-chart/ChartContent';
 
 interface CategoryData {
     category: string;
