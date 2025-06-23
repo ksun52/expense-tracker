@@ -24,13 +24,11 @@ export default function TableView() {
   }, [])
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="mb-4">
-        <SyncButton />
-      </div>
+    <div className="container mx-auto">
       <div className="w-full overflow-x-auto">
         <DataTable columns={columns} data={data} />
       </div>
+      <SyncButton />
     </div>
   )
 }

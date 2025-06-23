@@ -15,15 +15,15 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/table" element={<TableView />} />
+            <Route path="/transactions" element={<TableView />} />
             <Route path="/charts" element={<ChartView />} />
             <Route path="/graph" element={<Graph />} />
             <Route path="/temp" element={<ChartPieLabel />} />
-            <Route path="/dashboard" element={<Dashboard />} />
             {/* <Route path="/example-sidebar" element={<Page />} /> */}
           </Routes>
         </Layout>
       </Router>
+      // <Dashboard/>
   );
 }
 

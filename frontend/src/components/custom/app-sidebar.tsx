@@ -30,8 +30,8 @@ const items = [
     icon: Home,
   },
   {
-    title: "Table",
-    url: "/table",
+    title: "Transactions",
+    url: "/transactions",
     icon: Table,
   },
   {

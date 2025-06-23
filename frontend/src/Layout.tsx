@@ -1,18 +1,25 @@
 import type { ReactNode } from 'react';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/custom/app-sidebar';
-import { SidebarDesktop } from '@/components/custom/youtube-sidebar/sidebar-desktop';
-import { Bell, Home } from 'lucide-react';
+import { SiteHeader } from './components/site-header';
 interface LayoutProps {
   children: ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <SidebarProvider>
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 56)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+    >
       <AppSidebar/>
-      <main className="p-4">
-        <SidebarTrigger/>   
+      <main className="w-full">
+        {/* <SidebarTrigger/>    */}
+        <SiteHeader/>
         {children}
       </main>
     </SidebarProvider>
