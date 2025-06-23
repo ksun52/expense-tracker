@@ -6,6 +6,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { getNotionColorClass, getCategoryColor } from '@/utils/categoryUtils';
 
 interface CategoryData {
     category: string;
@@ -31,20 +32,24 @@ export function CategoryTable({ chartData }: CategoryTableProps) {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {sortedData.map((item) => (
-                        <TableRow key={item.category}>
-                            <TableCell className="flex items-center gap-2">
-                                <div
-                                    className="h-3 w-3 rounded-full"
-                                    style={{ backgroundColor: item.fill }}
-                                />
-                                {item.category}
-                            </TableCell>
-                            <TableCell className="text-right font-medium">
-                                ${item.amount.toFixed(2)}
-                            </TableCell>
-                        </TableRow>
-                    ))}
+                    {sortedData.map((item) => {
+                        const categoryColor = getCategoryColor(item.category);
+                        const colorClass = getNotionColorClass(categoryColor);
+                        
+                        return (
+                            <TableRow key={item.category}>
+                                <TableCell className="flex items-center gap-2">
+                                    <div
+                                        className={`h-3 w-3 rounded-full ${colorClass}`}
+                                    />
+                                    {item.category}
+                                </TableCell>
+                                <TableCell className="text-right font-medium">
+                                    ${item.amount.toFixed(2)}
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
                 </TableBody>
             </Table>
         </div>

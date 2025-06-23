@@ -5,6 +5,7 @@ import { format, subMonths, addMonths } from 'date-fns';
 import { ChartHeader } from '@/components/custom/custom-pie-chart/ChartHeader';
 import { ChartFooter } from '@/components/custom/custom-pie-chart/ChartFooter';
 import { ChartContent } from '@/components/custom/custom-pie-chart/ChartContent';
+import { getAllCategories, getNotionColorCSS, CategoryOption } from '@/utils/categoryUtils';
 
 interface CategoryData {
     category: string;
@@ -12,14 +13,6 @@ interface CategoryData {
     fill: string;
 }
 
-const COLORS = [
-    'var(--chart-1)',
-    'var(--chart-2)',
-    'var(--chart-3)',
-    'var(--chart-4)',
-    'var(--chart-5)',
-    'var(--chart-6)',
-];
 
 export default function ChartView() {
     const [selectedMonth, setSelectedMonth] = useState(new Date());
@@ -31,14 +24,19 @@ export default function ChartView() {
             const formattedMonth = format(month, 'yyyy-MM');
             const response = await fetch(`http://localhost:8000/api/v1/summary/categories?month=${formattedMonth}`);
             const data = await response.json();
+
+            // Get all available categories from categories.json
+            const allCategories = getAllCategories();
             
-            // Transform the data into the format expected by the chart
-            // TODO: change colors 
-            const transformedData = Object.entries(data).map(([category, amount], index) => ({
-                category,
-                amount: Number(amount),
-                fill: COLORS[index % COLORS.length]
-            }));
+            // Create data for all categories, including those with $0 spending
+            const transformedData: CategoryData[] = allCategories.map(category => {
+                const amount = data[category.name] || 0;
+                return {
+                    category: category.name,
+                    amount: Number(amount),
+                    fill: getNotionColorCSS(category.color)
+                };
+            }).sort((a, b) => b.amount - a.amount); // Sort by amount descending
             
             setChartData(transformedData);
 

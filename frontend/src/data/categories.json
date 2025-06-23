@@ -1,0 +1,39 @@
+[
+  {
+    "name": "misc",
+    "color": "green"
+  },
+  {
+    "name": "going out",
+    "color": "blue"
+  },
+  {
+    "name": "groceries",
+    "color": "gray"
+  },
+  {
+    "name": "restaurants/coffee",
+    "color": "orange"
+  },
+  {
+    "name": "clothes/care",
+    "color": "yellow"
+  },
+  {
+    "name": "entertainment",
+    "color": "purple"
+  },
+  {
+    "name": "utilities",
+    "color": "pink"
+  },
+  {
+    "name": "transportation",
+    "color": "brown"
+  },
+  {
+    "name": "subscriptions",
+    "color": "red"
+  }
+  
+] 
