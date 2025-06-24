@@ -71,3 +71,31 @@ def get_monthly_summary(
         return monthly_totals
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+@router.get("/monthly-categories")
+def get_monthly_categories_summary(db: Session = Depends(get_db)):
+    """
+    Get total spending by category for each month.
+    Returns: { category: { 'YYYY-MM': total, ... }, ... }
+    """
+    results = (
+        db.query(
+            Expenses.category,
+            extract('year', Expenses.date).label('year'),
+            extract('month', Expenses.date).label('month'),
+            func.sum(Expenses.amount).label('total')
+        )
+        .group_by(Expenses.category, 'year', 'month')
+        .all()
+    )
+
+    summary = {}
+    for category, year, month, total in results:
+        if not category:
+            continue
+        key = f"{int(year):04d}-{int(month):02d}"
+        if category not in summary:
+            summary[category] = {}
+        summary[category][key] = float(total)
+    return summary

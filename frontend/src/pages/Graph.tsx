@@ -19,6 +19,8 @@ import {
   ChartTooltipContent,
   CustomExpenseChartTooltipContent,
 } from "@/components/ui/chart"
+import CategoryGraphs from "@/components/custom/graphs/category-graphs"
+import ReusableChartCard from "@/components/custom/graphs/reusable-chart-card"
 
 export const description = "A linear line chart"
 
@@ -60,7 +62,7 @@ export default function MonthlyTrends() {
   }, []);
 
   const calculateTrend = () => {
-    if (chartData.length < 2) return { percentage: 0, isPositive: true };
+    if (chartData.length < 2) return { percentage: 0, isPositive: false };
     const current = chartData[chartData.length - 1].amount;
     const previous = chartData[chartData.length - 2].amount;
     const percentage = ((current - previous) / previous) * 100;
@@ -73,75 +75,28 @@ export default function MonthlyTrends() {
   const trend = useMemo(() => calculateTrend(), [chartData]);
   
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Monthly Spending Trend</CardTitle>
-        <CardDescription>Lifetime Spending</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="w-full min-h-[200px]">
-          <LineChart
-            data={chartData}
-            margin={{
-              left: 12,
-              right: 12,
-              bottom: 12,
-            }}
-          >
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              angle={-45}
-              textAnchor="end"
-              height={50}
-              tickFormatter={(value) => format(parse(value, 'yyyy-MM', new Date()), 'yyyy-MMM')}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value: number) => `$${Number(value).toFixed(2)}`}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent 
-                formatter={(value) => `Total: $${Number(value).toFixed(2)}`}
-                labelFormatter={(label) => format(parse(label, 'yyyy-MM', new Date()), 'yyyy-MMM')}
-                nameKey="month"
-              />}
-            />
-            <Line
-              dataKey="amount"
-              type="linear"
-              stroke="var(--color-amount)"
-              strokeWidth={2}
-              dot={{ r: 4, strokeWidth: 2 }}
-              activeDot={{ r: 6, strokeWidth: 2 }}
-            />
-          </LineChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex items-center gap-2 leading-none font-medium">
-          {trend.isPositive ? (
-            <>
-              Spending increased by {trend.percentage}% this month
-              <TrendingUp className="h-4 w-4 text-red-500" />
-            </>
-          ) : (
-            <>
-              Spending decreased by {trend.percentage}% this month
-              <TrendingDown className="h-4 w-4 text-green-500" />
-            </>
-          )}
-        </div>
-        <div className="text-muted-foreground leading-none">
-          Showing lifetime spending
-        </div>
-      </CardFooter>
-    </Card>
+    <div>
+      <ReusableChartCard
+        title="Monthly Spending Trends"
+        description="Lifetime Spending"
+        chartData={chartData}
+        chartConfig={chartConfig}
+        className="mt-6"
+        isTrendingUp={trend.isPositive}
+        trendUp={
+          <>
+            Spending increased by {trend.percentage}% this month
+            <TrendingUp className="h-4 w-4 text-red-500" />
+          </>
+        }
+        trendDown={
+          <>
+            Spending decreased by {trend.percentage}% this month
+            <TrendingDown className="h-4 w-4 text-green-500" />
+          </>
+        }
+      />
+      <CategoryGraphs />
+    </div>
   )
 }
