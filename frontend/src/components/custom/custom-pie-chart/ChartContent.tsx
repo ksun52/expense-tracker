@@ -23,6 +23,7 @@ interface ChartContentProps {
 }
 
 export function ChartContent({ chartData, chartConfig }: ChartContentProps) {
+    const totalAmount = chartData.reduce((acc, curr) => acc + curr.amount, 0);
     return (
         <CardContent className="flex-1 pb-0">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
@@ -37,7 +38,7 @@ export function ChartContent({ chartData, chartConfig }: ChartContentProps) {
                                 <ChartTooltip 
                                     cursor={false} 
                                     content={({ active, payload }) => (
-                                        <CustomExpenseChartTooltipContent active={active ?? false} payload={payload ?? []} />
+                                        <CustomExpenseChartTooltipContent active={active ?? false} payload={payload ?? []} totalAmount={totalAmount} />
                                     )}
                                 />
                                 <Pie 

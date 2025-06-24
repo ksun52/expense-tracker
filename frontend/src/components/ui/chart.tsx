@@ -249,12 +249,16 @@ function ChartTooltipContent({
 function CustomExpenseChartTooltipContent({
   active,
   payload,
+  totalAmount,
 }: React.ComponentProps<typeof RechartsPrimitive.Tooltip> & {
   active: boolean
   payload: any[]
+  totalAmount: number
 }) {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
+    const percentage = totalAmount > 0
+      ? ((data.amount / totalAmount) * 100).toFixed(1) : "0.0";
     return (
       <div className="rounded-lg border bg-background p-4 shadow-sm">
         <div className="flex flex-col gap-2">
@@ -263,7 +267,7 @@ function CustomExpenseChartTooltipContent({
               {data.category}
             </span>
             <span className="text-xl font-bold">
-              ${data.amount.toFixed(2)}
+              {percentage}%
             </span>
           </div>
         </div>
