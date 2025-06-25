@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css'
+
 import Layout from './Layout';
 import Home from './pages/Home';
 import TableView from './pages/TableView';
@@ -6,8 +8,8 @@ import ChartView from './pages/ChartView';
 import ChartPieLabel from './pages/temp';
 import Graph from './pages/Graph';
 import Dashboard from './pages/Dashboard';
-import './App.css'
 
+import ReportsPage from './pages/ReportsPage';
 
 function App() {
   return (
@@ -17,8 +19,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/transactions" element={<TableView />} />
             <Route path="/charts" element={<ChartView />} />
-            <Route path="/graph" element={<Graph />} />
+            <Route path="/graphs" element={<Graph />} />
             <Route path="/temp" element={<ChartPieLabel />} />
+            <Route path="/reports" element={<ReportsPage />} />
             {/* <Route path="/example-sidebar" element={<Page />} /> */}
           </Routes>
         </Layout>

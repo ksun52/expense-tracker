@@ -1,4 +1,4 @@
-import { Calendar, ChevronDown, ChevronUp, Home, Inbox, Plus, Search, Settings, Table, User2 } from "lucide-react"
+import { Calendar, ChartLine, ChartPie, ChevronDown, ChevronUp, Home, Inbox, Plus, Search, Settings, Table, User2, ClipboardPlus } from "lucide-react"
 
 import {
   Sidebar,
@@ -37,17 +37,17 @@ const items = [
   {
     title: "Charts",
     url: "/charts",
-    icon: Inbox,
+    icon: ChartPie,
   },
   {
     title: "Graphs",
-    url: "/graph",
-    icon: Calendar,
+    url: "/graphs",
+    icon: ChartLine,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
+    title: "Reports",
+    url: "/reports",
+    icon: ClipboardPlus,
   },
   {
     title: "Settings",
