@@ -1,8 +1,7 @@
-import { ReactNode, useMemo } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import { ReactNode } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../../ui/chart";
-import { TrendingUp, TrendingDown } from "lucide-react";
 import { format, parse } from "date-fns";
 
 interface ChartDataPoint {

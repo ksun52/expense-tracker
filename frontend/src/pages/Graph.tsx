@@ -1,23 +1,10 @@
 "use client"
 
 import { TrendingUp, TrendingDown } from "lucide-react"
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 import { useState, useEffect, useMemo } from "react"
-import { format, parse } from "date-fns"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+
 import {
   ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  CustomExpenseChartTooltipContent,
 } from "@/components/ui/chart"
 import CategoryGraphs from "@/components/custom/graphs/category-graphs"
 import ReusableChartCard from "@/components/custom/graphs/reusable-chart-card"
