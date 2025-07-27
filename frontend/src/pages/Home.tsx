@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
+import { AssetBreakdownCard } from "@/components/custom/asset-breakdown"
 const generateFakeData = (days: number): { date: string; value: number }[] => {
   const now = new Date()
   const data = []
@@ -163,6 +163,7 @@ export default function FinanceDashboard() {
           </p>
           </CardFooter>
         </Card>
+        <AssetBreakdownCard />
       </div>
     </>
   )
