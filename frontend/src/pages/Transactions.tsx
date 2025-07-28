@@ -1,7 +1,8 @@
+import { TransactionsHeader } from "@/components/headers/transactions-header"
 import { Payment, columns } from "../components/custom/payments-table/columns"
 import DataTable from "../components/custom/payments-table/data-table"
 import { useEffect, useState } from "react"
-import SyncButton from "@/components/custom/payments-table/sync-button"
+
 
 async function getData(): Promise<Payment[]> {
   const response = await fetch('http://localhost:8000/api/v1/table')
@@ -24,11 +25,11 @@ export default function TableView() {
   }, [])
 
   return (
-    <div className="container mx-auto">
+    <>
+      <TransactionsHeader />
       <div className="w-full overflow-x-auto">
         <DataTable columns={columns} data={data} />
       </div>
-      <SyncButton />
-    </div>
+    </>
   )
 }

@@ -6,6 +6,8 @@ import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DataTableColumnHeader } from "@/components/custom/custom-table/column-header"
+import categories from "@/data/categories.json"
+import paymentMethods from "@/data/payment_methods.json"
 
 import {
   DropdownMenu,
@@ -29,6 +31,22 @@ export type Payment = {
   method: string
   created_at: Date
   updated_at: Date
+}
+
+// Function to get category styling from categories.json
+const getCategoryStyle = (categoryName: string): string => {
+  const category = categories.find(cat => cat.name.toLowerCase() === categoryName.toLowerCase())
+  if (category) {
+    return `${category.bg} ${category.text}`
+  }
+  return "bg-gray-100 text-gray-800" // fallback for unknown categories
+}
+
+export const getMethodIconUrl = (methodName: string): string | null => {
+  const entry = paymentMethods.find(
+    (m: { name: string; icon: string }) => m.name.toLowerCase() === methodName.toLowerCase()
+  )
+  return entry?.icon || null
 }
 
 export const columns: ColumnDef<Payment>[] = [
@@ -59,11 +77,25 @@ export const columns: ColumnDef<Payment>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
+    cell: ({ row }) => {
+      const name = row.getValue("name") as string
+      return (
+        <div
+          className="max-w-[180px] truncate text-left"
+          title={name}
+        >
+          {name}
+        </div>
+      )
+    },
   },
   {
     accessorKey: "date",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
+    ),
+    cell: ({ row }) => (
+      <div className="text-left">{row.getValue("date")}</div>
     ),
   },
   {
@@ -78,7 +110,7 @@ export const columns: ColumnDef<Payment>[] = [
         currency: "USD",
       }).format(amount)
  
-      return <div className="text-right font-medium">{formatted}</div>
+      return <div className="text-left font-medium">{formatted}</div>
     },
   },
   {
@@ -86,18 +118,57 @@ export const columns: ColumnDef<Payment>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Category" />
     ),
+    cell: ({ row }) => {
+      const value = row.getValue("category") as string
+      const color = getCategoryStyle(value)
+      return (
+        <div className="flex justify-left">
+          <span className={`text-xs px-3 py-1 rounded-full font-medium ${color}`}>
+            {value}
+          </span>
+        </div>
+      )
+    },
   },
   {
     accessorKey: "sub_category",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Subcategory" />
     ),
+    cell: ({ row }) => {
+      const value = row.getValue("sub_category") as string
+      const color = getCategoryStyle(value)
+      return (
+        <div className="flex justify-left">
+          <span className={`text-xs px-3 py-1 rounded-full font-medium ${color}`}>
+            {value}
+          </span>
+        </div>
+      )
+    },
   },
   {
     accessorKey: "method",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Method" />
     ),
+    cell: ({ row }) => {
+      const method = row.getValue("method") as string
+      const icon = getMethodIconUrl(method)
+  
+      return (
+        <div className="flex items-center gap-2 text-left">
+          {icon && (
+            <img
+              src={icon}
+              alt={`${method} icon`}
+              className="w-4 h-4"
+            />
+          )}
+          <span>{method}</span>
+        </div>
+      )
+    },
   },
   {
     id: "actions",
@@ -120,8 +191,11 @@ export const columns: ColumnDef<Payment>[] = [
               Copy payment ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(payment.amount.toString())}
+            >
+              Copy amount
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

@@ -3,7 +3,7 @@ import './App.css'
 
 import Layout from './Layout';
 import Home from './pages/Home';
-import TableView from './pages/TableView';
+import TableView from './pages/Transactions';
 import ChartView from './pages/ChartView';
 import ChartPieLabel from './pages/temp';
 import Graph from './pages/Graph';

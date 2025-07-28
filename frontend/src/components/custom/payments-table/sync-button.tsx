@@ -18,13 +18,11 @@ const [isSyncing, setIsSyncing] = useState(false)
   }
 
   return (
-      <div className="container mx-auto py-10">
         <Button 
             onClick={handleSync} 
             disabled={isSyncing}
         >
             {isSyncing ? 'Syncing...' : 'Sync with Notion'}
         </Button>
-      </div>
     )
 }
