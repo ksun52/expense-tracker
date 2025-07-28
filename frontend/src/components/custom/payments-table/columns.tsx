@@ -97,6 +97,15 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => (
       <div className="text-left">{row.getValue("date")}</div>
     ),
+    filterFn: (row, _columnId, filterValue) => {
+      if (!filterValue?.startDate || !filterValue?.endDate) return true;
+  
+      const rowDate = new Date(row.getValue("date"));
+      return (
+        rowDate >= new Date(filterValue.startDate) &&
+        rowDate <= new Date(filterValue.endDate)
+      );
+    },
   },
   {
     accessorKey: "amount",
