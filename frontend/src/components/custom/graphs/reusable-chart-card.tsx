@@ -57,6 +57,7 @@ export default function ReusableChartCard({
               angle={-45}
               textAnchor="end"
               height={50}
+              interval={0}
               tickFormatter={(value) => format(parse(value, 'yyyy-MM', new Date()), 'yyyy-MMM')}
             />
             <YAxis

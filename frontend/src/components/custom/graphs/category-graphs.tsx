@@ -65,8 +65,10 @@ export default function CategoryGraphs() {
 
         const calculateTrend = () => {
           if (chartData.length < 2) return { percentage: 0, isPositive: false };
-          const current = chartData[chartData.length - 1].amount;
-          const previous = chartData[chartData.length - 2].amount;
+          const current = chartData.at(-1)?.amount ?? 0
+          const previous = chartData.length >= 2  // prevent division by zero
+            ? chartData.at(-2)?.amount || current
+            : current
           const percentage = ((current - previous) / previous) * 100;
           return {
             percentage: Math.abs(percentage).toFixed(1),

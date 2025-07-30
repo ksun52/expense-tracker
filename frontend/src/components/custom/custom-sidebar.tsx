@@ -54,7 +54,7 @@ export function Sidebar() {
           ${open ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
       >
         <div className="flex items-center justify-between mb-6 px-1">
-          <img src="logo.png" alt="Logo" className="w-10 h-10" />
+          <img src="/logo.png" alt="Logo" className="w-10 h-10" />
           <div className="hidden md:flex gap-2">
             <Search className="w-5 h-5 text-muted-foreground" />
             <Bell className="w-5 h-5 text-muted-foreground" />

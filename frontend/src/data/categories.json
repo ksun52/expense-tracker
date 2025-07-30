@@ -44,8 +44,8 @@
   {
     "name": "transportation",
     "color": "brown",
-    "bg": "bg-brown-100",
-    "text": "text-brown-800"
+    "bg": "bg-amber-100",
+    "text": "text-amber-800"
   },
   {
     "name": "subscriptions",

@@ -13,5 +13,5 @@ def get_all_expenses(db: Session = Depends(get_db)):
     """
     Retrieve all expenses from the database.
     """
-    expenses = db.query(Expenses).all()
+    expenses = db.query(Expenses).order_by(Expenses.date.desc()).all()
     return expenses 
