@@ -3,15 +3,15 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.database.session import get_db
-from app.models.expenses import Expenses
-from app.schemas.expense import ExpenseResponse
+from backend.app.models import Transactions
+from backend.app.schemas import TransactionResponse
 
 router = APIRouter()
 
-@router.get("/", response_model=List[ExpenseResponse])
-def get_all_expenses(db: Session = Depends(get_db)):
+@router.get("/", response_model=List[TransactionResponse])
+def get_all_transactions(db: Session = Depends(get_db)):
     """
-    Retrieve all expenses from the database.
+    Retrieve all transactions from the database.
     """
-    expenses = db.query(Expenses).order_by(Expenses.date.desc()).all()
-    return expenses 
+    transactions = db.query(Transactions).order_by(Transactions.date.desc()).all()
+    return transactions 

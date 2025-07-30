@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, extract
 from app.database.session import get_db
-from app.models.expenses import Expenses
+from backend.app.models import Transactions
 
 router = APIRouter()
 
@@ -23,14 +23,14 @@ def get_category_summary(
         # Query the database for category totals
         results = (
             db.query(
-                Expenses.category,
-                func.sum(Expenses.amount).label('total')
+                Transactions.category,
+                func.sum(Transactions.amount).label('total')
             )
             .filter(
-                extract('year', Expenses.date) == month_date.year,
-                extract('month', Expenses.date) == month_date.month
+                extract('year', Transactions.date) == month_date.year,
+                extract('month', Transactions.date) == month_date.month
             )
-            .group_by(Expenses.category)
+            .group_by(Transactions.category)
             .all()
         )
         
@@ -54,9 +54,9 @@ def get_monthly_summary(
         # Query the database for monthly totals
         results = (
             db.query(
-                extract('year', Expenses.date).label('year'),
-                extract('month', Expenses.date).label('month'),
-                func.sum(Expenses.amount).label('total')
+                extract('year', Transactions.date).label('year'),
+                extract('month', Transactions.date).label('month'),
+                func.sum(Transactions.amount).label('total')
             )
             .group_by('year', 'month')
             .all()
@@ -81,12 +81,12 @@ def get_monthly_categories_summary(db: Session = Depends(get_db)):
     """
     results = (
         db.query(
-            Expenses.category,
-            extract('year', Expenses.date).label('year'),
-            extract('month', Expenses.date).label('month'),
-            func.sum(Expenses.amount).label('total')
+            Transactions.category,
+            extract('year', Transactions.date).label('year'),
+            extract('month', Transactions.date).label('month'),
+            func.sum(Transactions.amount).label('total')
         )
-        .group_by(Expenses.category, 'year', 'month')
+        .group_by(Transactions.category, 'year', 'month')
         .all()
     )
 

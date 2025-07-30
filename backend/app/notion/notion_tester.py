@@ -30,8 +30,8 @@ def print_database_structure():
     except Exception as e:
         print(f"Error getting database structure: {str(e)}")
 
-def explore_expenses():
-    """Print the first few expenses from the database."""
+def explore_transactions():
+    """Print the first few transactions from the database."""
     notion = Client(auth=NOTION_API_KEY)
     
     try:
@@ -70,9 +70,9 @@ def explore_expenses():
             print(json.dumps(properties, indent=2))
             
     except Exception as e:
-        print(f"Error exploring expenses: {str(e)}")
+        print(f"Error exploring transactions: {str(e)}")
 
 if __name__ == "__main__":
     print("Exploring Notion Database...")
     print_database_structure()
-    explore_expenses() 
+    explore_transactions() 

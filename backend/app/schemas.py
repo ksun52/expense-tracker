@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
-class ExpenseResponse(BaseModel):
+class TransactionResponse(BaseModel):
     id: int
     notion_id: Optional[str]
     name: str

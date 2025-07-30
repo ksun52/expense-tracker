@@ -4,7 +4,7 @@ from datetime import datetime, UTC
 import logging
 from app.notion.config import *
 from app.database.base import Base, SessionLocal
-from app.models.expenses import Expenses
+from app.models import Transactions
 
 # Set up logging
 logging.basicConfig(level=LOG_LEVEL)
@@ -15,10 +15,10 @@ class NotionConnector:
         self.notion = Client(auth=NOTION_API_KEY)
         self.db = SessionLocal()
 
-    def fetch_notion_expenses(self):
-        """Fetch all expenses from Notion database."""
+    def fetch_notion_transactions(self):
+        """Fetch all transactions from Notion database."""
         try:
-            expenses_list = []
+            transactions_list = []
             has_more = True
             start_cursor = None
             
@@ -49,7 +49,7 @@ class NotionConnector:
                         logger.warning(f"Skipping empty row with ID: {page['id']}")
                         continue
 
-                    # Extract expense data from Notion properties
+                    # Extract transaction data from Notion properties
                     # First get the content inside of each property and check if it is empty 
                     name = properties.get("Name", {}).get("title", [{}])[0].get("text", {})
                     amount = properties.get("Amount", {})
@@ -75,7 +75,7 @@ class NotionConnector:
                     # Convert date string to datetime object
                     date = datetime.fromisoformat(date_str) if date_str else None
                     
-                    expense = {
+                    transaction = {
                         "notion_id": page["id"],
                         "name": name,
                         "amount": amount,
@@ -87,94 +87,94 @@ class NotionConnector:
                     
                     # check for missing values and add default + raise warning
                     value_missing = False
-                    if expense["name"] is None:
-                        expense["name"] = "N/A"
+                    if transaction["name"] is None:
+                        transaction["name"] = "N/A"
                         value_missing = True
-                    if expense["amount"] is None:
-                        expense["amount"] = 0
+                    if transaction["amount"] is None:
+                        transaction["amount"] = 0
                         value_missing = True
-                    if expense["date"] is None:
-                        expense["date"] = datetime.now(UTC)
+                    if transaction["date"] is None:
+                        transaction["date"] = datetime.now(UTC)
                         value_missing = True
-                    if expense["category"] is None:
-                        expense["category"] = "N/A"
+                    if transaction["category"] is None:
+                        transaction["category"] = "N/A"
                         value_missing = True
-                    if expense["method"] is None:
-                        expense["method"] = "N/A"
+                    if transaction["method"] is None:
+                        transaction["method"] = "N/A"
                         value_missing = True
-                    if expense["sub_category"] is None:
-                        expense["sub_category"] = expense["category"]
+                    if transaction["sub_category"] is None:
+                        transaction["sub_category"] = transaction["category"]
                         value_missing = True
 
                     if value_missing:
-                        logger.warning(f"Missing one or more values for expense: '{expense['name']}' - ensure this is filled out in Notion")
+                        logger.warning(f"Missing one or more values for transaction: '{transaction['name']}' - ensure this is filled out in Notion")
 
-                    expenses_list.append(expense)
+                    transactions_list.append(transaction)
                 
                 # Check if there are more pages
                 has_more = response.get("has_more", False)
                 start_cursor = response.get("next_cursor")
                 
                 # Log progress
-                logger.info(f"Fetched {len(expenses_list)} expenses so far...")
+                logger.info(f"Fetched {len(transactions_list)} transactions so far...")
             
-            logger.info(f"Total expenses fetched: {len(expenses_list)}")
-            return expenses_list
+            logger.info(f"Total transactions fetched: {len(transactions_list)}")
+            return transactions_list
             
         except Exception as e:
-            logger.error(f"Error fetching expenses from Notion: {str(e)}")
+            logger.error(f"Error fetching transactions from Notion: {str(e)}")
             raise
 
     def sync_to_sqlite(self):
-        """Sync expenses from Notion to SQLite database."""
+        """Sync transactions from Notion to SQLite database."""
         try:
-            # Get expenses from Notion
-            notion_expenses = self.fetch_notion_expenses()
+            # Get transactions from Notion
+            notion_transactions = self.fetch_notion_transactions()
 
             # Get all notion_ids from Notion
-            notion_ids = {expense["notion_id"] for expense in notion_expenses}
+            notion_ids = {transaction["notion_id"] for transaction in notion_transactions}
             
             # Track statistics
             stats = {
-                "total": len(notion_expenses),
+                "total": len(notion_transactions),
                 "created": 0,
                 "updated": 0,
                 "deleted": 0,
                 "errors": 0
             }
 
-            # Find expenses that exist in database but not in Notion
-            db_expenses = self.db.query(Expenses).all()
-            for row_expense in db_expenses:
-                if row_expense.notion_id not in notion_ids:
-                    # Delete expense that no longer exists in Notion
-                    self.db.delete(row_expense)
+            # Find transactions that exist in database but not in Notion
+            db_transactions = self.db.query(Transactions).all()
+            for row_transaction in db_transactions:
+                if row_transaction.notion_id not in notion_ids:
+                    # Delete transaction that no longer exists in Notion
+                    self.db.delete(row_transaction)
                     stats["deleted"] += 1
             
-            for expense_data in notion_expenses:
+            for transaction_data in notion_transactions:
                 try:
-                    # Check if expense already exists
-                    existing_expense = self.db.query(Expenses).filter(
-                        Expenses.notion_id == expense_data["notion_id"]
+                    # Check if transaction already exists
+                    existing_transaction = self.db.query(Transactions).filter(
+                        Transactions.notion_id == transaction_data["notion_id"]
                     ).first()
                     
-                    if existing_expense:
-                        # Update existing expense
+                    if existing_transaction:
+                        # Update existing transaction
                         any_updates = False
-                        for key, value in expense_data.items():
-                            if getattr(existing_expense, key) != value:
-                                setattr(existing_expense, key, value)
+                        for key, value in transaction_data.items():
+                            if getattr(existing_transaction, key) != value:
+                                setattr(existing_transaction, key, value)
                                 any_updates = True
                         if any_updates:
                             stats["updated"] += 1
                     else:
-                        # Create new expense
-                        new_expense = Expenses(**expense_data)
-                        self.db.add(new_expense)
+                        # Create new transaction
+                        new_transaction = Transactions(**transaction_data)
+                        self.db.add(new_transaction)
                         stats["created"] += 1
                     
                 except Exception as e:
-                    logger.error(f"Error processing expense {expense_data.get('notion_id')} with name {expense_data.get('name')}: {str(e)}")
+                    logger.error(f"Error processing transaction {transaction_data.get('notion_id')} with name {transaction_data.get('name')}: {str(e)}")
                     stats["errors"] += 1
                     continue
             
@@ -194,7 +194,7 @@ class NotionConnector:
         finally:
             self.db.close()
 
-def sync_expenses():
+def sync_transactions():
     """Convenience function to run the sync process."""
     connector = NotionConnector()
     return connector.sync_to_sqlite()
@@ -202,7 +202,7 @@ def sync_expenses():
 if __name__ == "__main__":
     # Test the sync process
     try:
-        stats = sync_expenses()
+        stats = sync_transactions()
         print(f"Sync completed successfully: {stats}")
     except Exception as e:
         print(f"Sync failed: {str(e)}")

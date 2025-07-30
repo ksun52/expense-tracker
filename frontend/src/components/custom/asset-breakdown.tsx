@@ -24,6 +24,7 @@ const assetData = [
     weight: 0.1846,
     accounts: [
       { name: "PNC", value: 5531.93 },
+      { name: "Venmo", value: 1000.00 },
     ],
   },
   {
@@ -34,6 +35,17 @@ const assetData = [
       { name: "Apple HYSA", value: 24429.96 },
     ],
   },
+  {
+    category: "Debt",
+    color: "bg-red-500",
+    weight: 0.0000,
+    accounts: [
+      { name: "Chase", value: 1000.00 },
+      { name: "Discover", value: 1000.00 },
+      { name: "Apple", value: 1000.00 },
+      { name: "Amex", value: 1000.00 },
+    ],
+  }
 ]
 
 const total = assetData.reduce(
