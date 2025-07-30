@@ -13,6 +13,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Progress } from "@/components/ui/progress"
+import { Link } from "react-router-dom"
+
 import { cn } from "@/lib/utils"
 
 const assetData = [
@@ -114,7 +116,9 @@ export function AssetBreakdownCard() {
                           <div className="flex items-center gap-2">
                             <span className="text-transparent">......</span>  {/* BAD CODE -- FIGURE OUT HOW TO ALIGN BETTER */}
                             <div className={cn(cat.color, "w-3 h-3 rounded-full")} />
-                            <span>{acc.name}</span>
+                            <Link to={`/accounts/${encodeURIComponent(acc.name)}`} className="hover:underline">
+                              {acc.name}
+                            </Link>
                           </div>
                           {/* weight */}
                           <div className="text-sm text-right">

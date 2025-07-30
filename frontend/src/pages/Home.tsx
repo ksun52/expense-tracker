@@ -30,6 +30,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { AssetBreakdownCard } from "@/components/custom/asset-breakdown"
+import { IncomeTableCard } from "@/components/custom/income-card"
+import { TravelTableCard } from "@/components/custom/travel-card"
 const generateFakeData = (days: number): { date: string; value: number }[] => {
   const now = new Date()
   const data = []
@@ -164,6 +166,10 @@ export default function FinanceDashboard() {
           </CardFooter>
         </Card>
         <AssetBreakdownCard />
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          <IncomeTableCard />
+          <TravelTableCard />
+        </div>
       </div>
     </>
   )

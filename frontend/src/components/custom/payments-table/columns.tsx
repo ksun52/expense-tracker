@@ -106,6 +106,11 @@ export const columns: ColumnDef<Payment>[] = [
         rowDate <= new Date(filterValue.endDate)
       );
     },
+    sortingFn: (rowA, rowB, columnId) => {
+      const a = new Date(rowA.getValue(columnId)).getTime()
+      const b = new Date(rowB.getValue(columnId)).getTime()
+      return (isNaN(a) ? 0 : a) - (isNaN(b) ? 0 : b)
+    }
   },
   {
     accessorKey: "amount",

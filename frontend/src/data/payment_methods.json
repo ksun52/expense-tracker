@@ -1,26 +1,26 @@
 [
   {
     "name": "venmo",
-    "icon": "/public/logos/venmo.svg"
+    "icon": "/logos/venmo.svg"
   },
   {
     "name": "debit",
-    "icon": "/public/logos/debit.svg"
+    "icon": "/logos/debit.svg"
   },
   {
     "name": "chase",
-    "icon": "/public/logos/chase.svg"
+    "icon": "/logos/chase.svg"
   },
   {
     "name": "amex",
-    "icon": "/public/logos/amex.svg"
+    "icon": "/logos/amex.svg"
   },
   {
     "name": "discover",
-    "icon": "/public/logos/discover.svg"
+    "icon": "/logos/discover.svg"
   },
   {
     "name": "apple",
-    "icon": "/public/logos/apple.svg"
+    "icon": "/logos/apple.svg"
   }  
 ]
