@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
 from app.models import Account, AccountHistory, Transactions, Income, AccountType
-from app.schemas import AccountCreate, AccountUpdate, ManualAdjustment
+from app.schemas import AccountCreate, AccountUpdate, AccountManualAdjustment
 from datetime import datetime, UTC
 import json
 from typing import List, Optional
+
 
 class AccountService:
     def __init__(self, db: Session):
@@ -17,10 +18,10 @@ class AccountService:
             current_balance=account_data.initial_balance,
             associated_methods=account_data.associated_methods
         )
-        
+
         self.db.add(account)
         self.db.flush()  # Get the account ID
-        
+
         # Create initial history record if there's an initial balance
         if account_data.initial_balance != 0:
             self._create_history_record(
@@ -31,7 +32,7 @@ class AccountService:
                 change_type="initial_balance",
                 description="Initial account balance"
             )
-        
+
         self.db.commit()
         return account
 
@@ -62,7 +63,7 @@ class AccountService:
         self.db.commit()
         return account
 
-    def manual_adjustment(self, account_id: int, adjustment: ManualAdjustment) -> Optional[Account]:
+    def manual_adjustment(self, account_id: int, adjustment: AccountManualAdjustment) -> Optional[Account]:
         """Manually adjust account balance."""
         account = self.get_account_by_id(account_id)
         if not account:
@@ -70,11 +71,11 @@ class AccountService:
 
         previous_balance = account.current_balance
         new_balance = previous_balance + adjustment.amount
-        
+
         # Update account balance
         account.current_balance = new_balance
         account.updated_at = datetime.now(UTC)
-        
+
         # Create history record
         self._create_history_record(
             account=account,
@@ -84,36 +85,36 @@ class AccountService:
             change_type="manual_adjustment",
             description=adjustment.description
         )
-        
+
         self.db.commit()
         return account
 
-    def transfer_between_accounts(self, from_account_id: int, to_account_id: int, 
-                                amount: float, description: str = None) -> bool:
+    def transfer_between_accounts(self, from_account_id: int, to_account_id: int,
+                                  amount: float, description: str = None) -> bool:
         """Transfer money between two accounts."""
         from_account = self.get_account_by_id(from_account_id)
         to_account = self.get_account_by_id(to_account_id)
-        
+
         if not from_account or not to_account:
             return False
-        
+
         if from_account.current_balance < amount:
             return False  # Insufficient funds
-        
+
         # Update balances
         from_previous = from_account.current_balance
         to_previous = to_account.current_balance
-        
+
         from_account.current_balance -= amount
         to_account.current_balance += amount
-        
+
         from_account.updated_at = datetime.now(UTC)
         to_account.updated_at = datetime.now(UTC)
-        
+
         # Create history records
         transfer_desc = description or f"Transfer to {to_account.name}"
         receive_desc = description or f"Transfer from {from_account.name}"
-        
+
         self._create_history_record(
             account=from_account,
             previous_balance=from_previous,
@@ -122,7 +123,7 @@ class AccountService:
             change_type="transfer",
             description=transfer_desc
         )
-        
+
         self._create_history_record(
             account=to_account,
             previous_balance=to_previous,
@@ -131,7 +132,7 @@ class AccountService:
             change_type="transfer",
             description=receive_desc
         )
-        
+
         self.db.commit()
         return True
 
@@ -149,14 +150,16 @@ class AccountService:
     def update_balance_from_income(self, income: Income) -> None:
         """Update account balances based on income."""
         if income.account.lower() == "apple hysa":
-            account = self._get_or_create_account("Apple HYSA", AccountType.INVESTING)
+            account = self._get_or_create_account(
+                "Apple HYSA", AccountType.INVESTING)
         else:
-            account = self._get_or_create_account("Checking Account", AccountType.CASH)
-        
+            account = self._get_or_create_account(
+                "Checking Account", AccountType.CASH)
+
         previous_balance = account.current_balance
         account.current_balance += income.amount
         account.updated_at = datetime.now(UTC)
-        
+
         self._create_history_record(
             account=account,
             previous_balance=previous_balance,
@@ -169,13 +172,16 @@ class AccountService:
 
     def _update_checking_account(self, amount: float, transaction: Transactions) -> None:
         """Update checking account balance."""
-        account = self._get_or_create_account("Checking Account", AccountType.CASH)
-        self._update_account_balance(account, amount, "transaction", transaction)
+        account = self._get_or_create_account(
+            "Checking Account", AccountType.CASH)
+        self._update_account_balance(
+            account, amount, "transaction", transaction)
 
     def _update_venmo_account(self, amount: float, transaction: Transactions) -> None:
         """Update Venmo account balance."""
         account = self._get_or_create_account("Venmo", AccountType.CASH)
-        self._update_account_balance(account, amount, "transaction", transaction)
+        self._update_account_balance(
+            account, amount, "transaction", transaction)
 
     def _update_debt_account(self, amount: float, transaction: Transactions) -> None:
         """Update debt account balance - try to match by payment method."""
@@ -183,29 +189,30 @@ class AccountService:
         debt_accounts = self.db.query(Account).filter(
             Account.account_type == AccountType.DEBT
         ).all()
-        
+
         account_found = False
         for account in debt_accounts:
             if account.associated_methods:
                 methods = json.loads(account.associated_methods)
                 if transaction.method in methods:
-                    self._update_account_balance(account, amount, "transaction", transaction)
+                    self._update_account_balance(
+                        account, amount, "transaction", transaction)
                     account_found = True
                     break
-        
+
         # If no matching debt account found, could create a default one
         # or leave for manual assignment later
         if not account_found:
             # For now, we'll skip auto-assignment and let manual assignment handle it
             pass
 
-    def _update_account_balance(self, account: Account, amount: float, 
-                              change_type: str, transaction: Transactions = None) -> None:
+    def _update_account_balance(self, account: Account, amount: float,
+                                change_type: str, transaction: Transactions = None) -> None:
         """Helper to update account balance and create history."""
         previous_balance = account.current_balance
         account.current_balance += amount
         account.updated_at = datetime.now(UTC)
-        
+
         self._create_history_record(
             account=account,
             previous_balance=previous_balance,
@@ -230,9 +237,9 @@ class AccountService:
         return account
 
     def _create_history_record(self, account: Account, previous_balance: float,
-                             amount_changed: float, new_balance: float, change_type: str,
-                             related_transaction_id: int = None, related_income_id: int = None,
-                             description: str = None) -> None:
+                               amount_changed: float, new_balance: float, change_type: str,
+                               related_transaction_id: int = None, related_income_id: int = None,
+                               description: str = None) -> None:
         """Create an account history record."""
         history = AccountHistory(
             account_id=account.id,
@@ -244,4 +251,4 @@ class AccountService:
             related_income_id=related_income_id,
             description=description
         )
-        self.db.add(history) 
+        self.db.add(history)

@@ -1,5 +1,8 @@
 from datetime import datetime, UTC
-from sqlalchemy import Column, Integer, String, Float, DateTime
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Enum, Text
+from sqlalchemy.orm import relationship
+from app.core.enums import AccountType, ChangeType
+
 from app.database.base import Base
 
 class Transactions(Base):
@@ -45,9 +48,6 @@ class Account(Base):
     account_type = Column(Enum(AccountType), nullable=False)
     current_balance = Column(Float, default=0.0)
     
-    # For debt accounts - track which payment methods belong to this account
-    associated_methods = Column(String)  # JSON string of payment methods
-    
     # Metadata
     created_at = Column(DateTime, default=lambda: datetime.now(UTC))
     updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
@@ -67,7 +67,7 @@ class AccountHistory(Base):
     new_balance = Column(Float, nullable=False)
     
     # Context about the change
-    change_type = Column(String, nullable=False)  # 'transaction', 'income', 'transfer', 'manual_adjustment', 'debt_payment'
+    change_type = Column(Enum(ChangeType), nullable=False)  # 'transaction', 'income', 'transfer', 'manual_adjustment', 'debt_payment'
     related_transaction_id = Column(Integer, ForeignKey("Transactions.id"), nullable=True)
     related_income_id = Column(Integer, ForeignKey("Income.id"), nullable=True)
     description = Column(Text)

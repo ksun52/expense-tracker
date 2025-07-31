@@ -1,12 +1,8 @@
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional, List
-from enum import Enum
+from app.core.enums import AccountType
 
-class AccountTypeEnum(str, Enum):
-    CASH = "cash"
-    INVESTING = "investing"
-    DEBT = "debt"
 
 class TransactionResponse(BaseModel):
     id: int
@@ -23,6 +19,7 @@ class TransactionResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
 class IncomeResponse(BaseModel):
     id: int
     notion_id: Optional[str]
@@ -35,6 +32,7 @@ class IncomeResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 class AccountHistoryResponse(BaseModel):
     id: int
@@ -51,12 +49,12 @@ class AccountHistoryResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
 class AccountResponse(BaseModel):
     id: int
     name: str
-    account_type: AccountTypeEnum
+    account_type: AccountType
     current_balance: float
-    associated_methods: Optional[str]
     created_at: datetime
     updated_at: datetime
     history: Optional[List[AccountHistoryResponse]] = []
@@ -64,16 +62,20 @@ class AccountResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
 class AccountCreate(BaseModel):
     name: str
-    account_type: AccountTypeEnum
+    account_type: AccountType
     initial_balance: float = 0.0
     associated_methods: Optional[str] = None
 
-class AccountUpdate(BaseModel):
-    name: Optional[str] = None
-    associated_methods: Optional[str] = None
 
-class ManualAdjustment(BaseModel):
+class AccountUpdate(BaseModel):
+    id: int
+    name: Optional[str] = None
+
+
+class AccountManualAdjustment(BaseModel):
+    id: int
     amount: float
-    description: str 
+    description: str

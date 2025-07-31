@@ -4,9 +4,10 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, extract
 from app.database.session import get_db
-from backend.app.models import Transactions
+from app.models import Transactions
 
 router = APIRouter()
+
 
 @router.get("/categories")
 def get_category_summary(
@@ -19,7 +20,7 @@ def get_category_summary(
     try:
         # Parse the month string
         month_date = datetime.strptime(month, "%Y-%m")
-        
+
         # Query the database for category totals
         results = (
             db.query(
@@ -33,16 +34,19 @@ def get_category_summary(
             .group_by(Transactions.category)
             .all()
         )
-        
+
         # Convert results to dictionary
-        category_totals = {category: float(total) for category, total in results}
-        
+        category_totals = {category: float(total)
+                           for category, total in results}
+
         return category_totals
     except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid month format. Please use YYYY-MM format.") 
+        raise HTTPException(
+            status_code=400, detail="Invalid month format. Please use YYYY-MM format.")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+
 @router.get("/monthly")
 def get_monthly_summary(
     db: Session = Depends(get_db)
@@ -71,7 +75,7 @@ def get_monthly_summary(
         return monthly_totals
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
 
 @router.get("/monthly-categories")
 def get_monthly_categories_summary(db: Session = Depends(get_db)):

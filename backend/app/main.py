@@ -8,7 +8,6 @@ from typing import List
 from app.core.config import get_settings
 from app.api.v1.router import api_router
 from app.database.init_db import init_db
-from app.notion.notion_connector import sync_expenses
 settings = get_settings()
 
 # Initialize database
@@ -39,13 +38,14 @@ app.add_middleware(
 # Include API router - mount all routes under /api/v1
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
+
 @app.get("/")
 async def root():
     return {
         "message": "Welcome to Expense Tracker Application",
         "version": settings.VERSION,
         "docs_url": "/docs"
-    } 
+    }
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
