@@ -5,15 +5,15 @@ from typing import List
 from app.database.session import get_db
 from app.models import Income
 from app.schemas import IncomeResponse
-from app.services.income_service import get_income_by_account
 
 router = APIRouter()
 
 
 @router.get("/", response_model=List[IncomeResponse])
-def get_all_income(account: str = None, db: Session = Depends(get_db)):
+def get_all_income(db: Session = Depends(get_db)):
     """
-    Retrieve all income records, optionally filtered by account.
+    Retrieve all income records from the database.
     """
-    income_records = get_income_by_account(db, account)
+    income_records = db.query(Income).order_by(
+        Income.date_received.desc()).all()
     return income_records

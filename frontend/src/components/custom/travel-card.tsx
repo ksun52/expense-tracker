@@ -1,17 +1,60 @@
+import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
-
-const data = [
-  { name: "Trip to Hawaii", amount: 2000 },
-  { name: "Trip to Hawaii", amount: 3420 },
-  { name: "Trip to Hawaii", amount: 970 },
-  { name: "Trip to Hawaii", amount: 1280 },
-  { name: "Trip to Hawaii", amount: 1000 },
-  { name: "Trip to Hawaii", amount: 800 },
-]
+import { fetchTravelData, TravelData } from "@/services/travelService"
 
 export function TravelTableCard() {
-  const average = data.reduce((acc, item) => acc + item.amount, 0) / data.length
+  const [travelData, setTravelData] = useState<TravelData[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const loadTravelData = async () => {
+      try {
+        setLoading(true)
+        const data = await fetchTravelData()
+        setTravelData(data)
+        setError(null)
+      } catch (err) {
+        setError('Failed to load travel data')
+        console.error('Error loading travel data:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadTravelData()
+  }, [])
+
+  const average = travelData.length > 0
+    ? travelData.reduce((acc, item) => acc + item.total, 0) / travelData.length
+    : 0
+
+  if (loading) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-2xl text-left font-bold">Travel Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">Loading travel data...</div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (error) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-2xl text-left font-bold">Travel Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-red-600">{error}</div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card className="w-full">
@@ -31,14 +74,14 @@ export function TravelTableCard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((item, index) => {
-                const percent_diff = ((item.amount - average) / average) * 100
+              {travelData.map((item, index) => {
+                const percent_diff = average > 0 ? ((item.total - average) / average) * 100 : 0
 
                 return (
                   <TableRow key={index}>
-                    <TableCell className="text-left">{item.name}</TableCell>
+                    <TableCell className="text-left">{item.sub_category}</TableCell>
                     <TableCell className="text-right">
-                      ${Math.abs(item.amount).toFixed(2)}
+                      ${Math.abs(item.total).toFixed(2)}
                     </TableCell>
                     <TableCell className="text-right">
                       {percent_diff > 0 ? (

@@ -32,3 +32,11 @@ class IncomeResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class TravelResponse(BaseModel):
+    sub_category: str
+    total: float
+
+    class Config:
+        from_attributes = True

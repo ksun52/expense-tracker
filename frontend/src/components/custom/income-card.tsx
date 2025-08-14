@@ -1,40 +1,78 @@
+import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
-
-const data = [
-  { name: "UM Grader Pay 1", amount: 291.08, date: "February 7, 2025" },
-  { name: "UM Grader Pay 2", amount: 291.08, date: "February 21, 2025" },
-  { name: "UM Grader Pay 3", amount: 291.08, date: "March 7, 2025" },
-  { name: "Michigan Tax Payment", amount: -15, date: "March 17, 2025" },
-  { name: "UM Grader Pay 4", amount: 291.08, date: "March 21, 2025" },
-  { name: "IRS tax refund", amount: 6472, date: "March 21, 2025" },
-  { name: "NY State Tax refund", amount: 3395, date: "March 27, 2025" },
-  { name: "UM Grader Pay 5", amount: 291.08, date: "April 4, 2025" },
-  { name: "UM Grader Pay 6", amount: 291.08, date: "April 18, 2025" },
-  { name: "Car Sale Commission", amount: 800, date: "April 30, 2025" },
-  { name: "UM Grader Pay 7", amount: 291.08, date: "May 2, 2025" },
-  { name: "UM Grader Pay 8", amount: 291.08, date: "May 16, 2025" },
-]
+import { fetchIncomeData, IncomeData } from "@/services/incomeService"
 
 export function IncomeTableCard() {
+  const [incomeData, setIncomeData] = useState<IncomeData[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const sortedData = [...data].sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime()
-  })
+  useEffect(() => {
+    const loadIncomeData = async () => {
+      try {
+        setLoading(true)
+        const data = await fetchIncomeData()
+        setIncomeData(data)
+        setError(null)
+      } catch (err) {
+        setError('Failed to load income data')
+        console.error('Error loading income data:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  const monthlyIncome = sortedData.reduce((acc, item) => {
+    loadIncomeData()
+  }, [])
+
+  const monthlyIncome = incomeData.reduce((acc, item) => {
     const amount = item.amount;
-    if (new Date(item.date).getMonth() === new Date().getMonth()) {
+    if (new Date(item.date_received).getMonth() === new Date().getMonth()) {
       return acc + amount;
     }
     return acc;
   }, 0)
-  
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  }
+
+  if (loading) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <span className="text-2xl text-left font-bold">Income Overview</span>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">Loading income data...</div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (error) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <span className="text-2xl text-left font-bold">Income Overview</span>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-red-600">{error}</div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card className="w-full">
       <CardHeader className="flex justify-between items-baseline">
         <span className="text-2xl text-left font-bold">Income Overview</span>
-        <span className="text-sm text-right">${monthlyIncome} this month</span>
+        <span className="text-sm text-right">${monthlyIncome.toFixed(2)} this month</span>
       </CardHeader>
 
       <CardContent>
@@ -48,15 +86,15 @@ export function IncomeTableCard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedData.map((item, index) => (
-                <TableRow key={index}>
+              {incomeData.map((item) => (
+                <TableRow key={item.id}>
                   <TableCell className="text-left">{item.name}</TableCell>
                   <TableCell className="text-right">
-                    {item.amount < 0 ? 
-                    ( <span className="text-red-600">- ${Math.abs(item.amount).toFixed(2)}</span> ) : 
-                    ( <span className="text-green-600">${Math.abs(item.amount).toFixed(2)}</span> )}
+                    {item.amount < 0 ?
+                      (<span className="text-red-600">- ${Math.abs(item.amount).toFixed(2)}</span>) :
+                      (<span className="text-green-600">${Math.abs(item.amount).toFixed(2)}</span>)}
                   </TableCell>
-                  <TableCell className="text-right">{item.date}</TableCell>
+                  <TableCell className="text-right">{formatDate(item.date_received)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
