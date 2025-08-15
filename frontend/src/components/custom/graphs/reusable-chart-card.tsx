@@ -68,7 +68,7 @@ export default function ReusableChartCard({
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent 
+              content={<ChartTooltipContent
                 formatter={(value) => `Total: $${Number(value).toFixed(2)}`}
                 labelFormatter={(label) => format(parse(label, 'yyyy-MM', new Date()), 'yyyy-MMM')}
                 nameKey="month"

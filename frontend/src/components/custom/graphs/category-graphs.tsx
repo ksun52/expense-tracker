@@ -27,16 +27,22 @@ interface CategoryMonthlyData {
   };
 }
 
-export default function CategoryGraphs() {
+type CategoryGraphsProps = {
+  monthRange: number;
+}
+
+export default function CategoryGraphs({ monthRange }: CategoryGraphsProps) {
   const [data, setData] = useState<CategoryMonthlyData>({});
   const [months, setMonths] = useState<string[]>([]);
 
   const fetchCategoryData = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/v1/summary/monthly-categories");
+
+      console.log("monthRange", monthRange);
+      const response = await fetch(`http://localhost:8000/api/v1/summary/monthly-categories?months=${monthRange}`);
       const result = await response.json();
       setData(result);
-      
+
       // Collect all months across all categories to make sure the x-axis is complete
       const allMonths = new Set<string>();
       Object.values(result).forEach((category: any) => {
@@ -50,7 +56,7 @@ export default function CategoryGraphs() {
 
   useEffect(() => {
     fetchCategoryData();
-  }, []);
+  }, [monthRange]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
@@ -75,7 +81,7 @@ export default function CategoryGraphs() {
             isPositive: percentage >= 0
           };
         };
-      
+
         const trend = calculateTrend();
 
         return (

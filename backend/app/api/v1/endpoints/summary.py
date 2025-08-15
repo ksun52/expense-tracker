@@ -1,4 +1,6 @@
-from datetime import datetime
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
 from typing import Dict
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
@@ -49,26 +51,35 @@ def get_category_summary(
 
 @router.get("/monthly")
 def get_monthly_summary(
+    months: int = Query(None, description="Number of months to include"),
     db: Session = Depends(get_db)
 ) -> Dict[str, float]:
     """
-    Get total spending by month.
+    Get total spending by month optionally limited to the past N months.
+    Past N months = current month + previous (N-1) full months.
     """
     try:
-        # Query the database for monthly totals
+        query = db.query(
+            extract('year', Transactions.date).label('year'),
+            extract('month', Transactions.date).label('month'),
+            func.sum(Transactions.amount).label('total')
+        )
+
+        if months:
+            # Start date = first day of (months-1) months ago
+            start_date = (date.today().replace(day=1) -
+                          relativedelta(months=months - 1))
+            query = query.filter(Transactions.date >= start_date)
+
         results = (
-            db.query(
-                extract('year', Transactions.date).label('year'),
-                extract('month', Transactions.date).label('month'),
-                func.sum(Transactions.amount).label('total')
-            )
+            query
             .group_by('year', 'month')
+            .order_by('year', 'month')
             .all()
         )
 
-        # Convert results to dictionary
         monthly_totals = {
-            f"{row.year}-{row.month:02d}": float(row.total)
+            f"{int(row.year)}-{int(row.month):02d}": float(row.total)
             for row in results
         }
 
@@ -78,19 +89,30 @@ def get_monthly_summary(
 
 
 @router.get("/monthly-categories")
-def get_monthly_categories_summary(db: Session = Depends(get_db)):
+def get_monthly_categories_summary(
+    months: int = Query(None, description="Number of months to include"),
+    db: Session = Depends(get_db)
+):
     """
     Get total spending by category for each month.
     Returns: { category: { 'YYYY-MM': total, ... }, ... }
     """
+    query = db.query(
+        Transactions.category,
+        extract('year', Transactions.date).label('year'),
+        extract('month', Transactions.date).label('month'),
+        func.sum(Transactions.amount).label('total')
+    )
+
+    if months:
+        start_date = (date.today().replace(day=1) -
+                      relativedelta(months=months - 1))
+        query = query.filter(Transactions.date >= start_date)
+
     results = (
-        db.query(
-            Transactions.category,
-            extract('year', Transactions.date).label('year'),
-            extract('month', Transactions.date).label('month'),
-            func.sum(Transactions.amount).label('total')
-        )
+        query
         .group_by(Transactions.category, 'year', 'month')
+        .order_by('year', 'month')
         .all()
     )
 

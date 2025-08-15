@@ -32,6 +32,7 @@ import {
 import { AssetBreakdownCard } from "@/components/custom/asset-breakdown"
 import { IncomeTableCard } from "@/components/custom/income-card"
 import { TravelTableCard } from "@/components/custom/travel-card"
+
 const generateFakeData = (days: number): { date: string; value: number }[] => {
   const now = new Date()
   const data = []
@@ -63,7 +64,7 @@ const dateRanges = {
     Math.floor(
       (new Date().getTime() -
         new Date(new Date().getFullYear(), 0, 1).getTime()) /
-        (1000 * 60 * 60 * 24)
+      (1000 * 60 * 60 * 24)
     ) + 1,
   "1y": 365,
   "3y": 365 * 3,
@@ -159,10 +160,10 @@ export default function FinanceDashboard() {
             </ChartContainer>
           </CardContent>
           <CardFooter>
-          <p className="text-xs flex justify-between text-muted-foreground w-full">
-            <span>{formatDate(rawData[0]?.date)}</span>
-            <span>{formatDate(rawData[rawData.length - 1]?.date)}</span>
-          </p>
+            <p className="text-xs flex justify-between text-muted-foreground w-full">
+              <span>{formatDate(rawData[0]?.date)}</span>
+              <span>{formatDate(rawData[rawData.length - 1]?.date)}</span>
+            </p>
           </CardFooter>
         </Card>
         <AssetBreakdownCard />

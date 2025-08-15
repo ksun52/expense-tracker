@@ -6,10 +6,30 @@ import { useState, useEffect, useMemo } from "react"
 import {
   ChartConfig,
 } from "@/components/ui/chart"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import CategoryGraphs from "@/components/custom/graphs/category-graphs"
 import ReusableChartCard from "@/components/custom/graphs/reusable-chart-card"
 
 export const description = "A linear line chart"
+
+const dateRanges = {
+  "3 Months": 3,
+  "6 Months": 6,
+  "9 Months": 9,
+  "YTD": new Date().getMonth() + 1,
+  "1 Year": 12,
+  "3 Years": 36,
+  "5 Years": 60,
+  "All Time": 0,
+} as const
+
+type RangeKey = keyof typeof dateRanges
 
 const chartConfig = {
   amount: {
@@ -25,10 +45,11 @@ interface MonthlyData {
 
 export default function MonthlyTrends() {
   const [chartData, setChartData] = useState<MonthlyData[]>([]);
+  const [range, setRange] = useState<RangeKey>("6 Months")
 
   const fetchMonthlyData = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/v1/summary/monthly');
+      const response = await fetch(`http://localhost:8000/api/v1/summary/monthly?months=${dateRanges[range]}`);
       const data = await response.json();
 
       // Transform data into format expected by graph 
@@ -46,15 +67,17 @@ export default function MonthlyTrends() {
 
   useEffect(() => {
     fetchMonthlyData();
-  }, []);
+  }, [range]);
 
   const calculateTrend = () => {
     if (chartData.length < 2) return { percentage: 0, isPositive: false };
 
     const current = chartData.at(-1)?.amount ?? 0
-    const previous = chartData.length >= 2  // prevent division by zero
-      ? chartData.at(-2)?.amount || current
-      : current
+    const previous = chartData.at(-2)?.amount ?? current;
+
+    if (previous === 0) {
+      return { percentage: 0, isPositive: true }; // avoid divide-by-zero
+    }
 
     const percentage = ((current - previous) / previous) * 100;
     return {
@@ -64,9 +87,25 @@ export default function MonthlyTrends() {
   };
 
   const trend = useMemo(() => calculateTrend(), [chartData]);
-  
+
   return (
     <div>
+      {/* Date Range Selector*/}
+      <div className="flex items-center gap-2">
+        <p className="text-sm font-medium">Display Range</p>
+        <Select value={range} onValueChange={v => setRange(v as RangeKey)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Display Range" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.keys(dateRanges).map(key => (
+              <SelectItem key={key} value={key}>
+                {key.toUpperCase()}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       <ReusableChartCard
         title="Monthly Spending Trends"
         description="Lifetime Spending"
@@ -87,7 +126,8 @@ export default function MonthlyTrends() {
           </>
         }
       />
-      <CategoryGraphs />
+
+      <CategoryGraphs monthRange={dateRanges[range]} />
     </div>
   )
 }
