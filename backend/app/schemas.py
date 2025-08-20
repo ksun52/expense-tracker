@@ -34,6 +34,12 @@ class IncomeResponse(BaseModel):
         from_attributes = True
 
 
+class IncomeByMonthResponse(BaseModel):
+    year: int
+    month: int
+    total: float
+
+
 class TravelResponse(BaseModel):
     sub_category: str
     total: float
