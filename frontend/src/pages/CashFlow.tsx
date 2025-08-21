@@ -8,11 +8,8 @@ export default function CashFlow() {
 
   useEffect(() => {
     // get current month and year
-    // const month = new Date().getMonth() + 1
-    // const year = new Date().getFullYear()
-
-    const month = 5
-    const year = 2025
+    const month = new Date().getMonth() + 1
+    const year = new Date().getFullYear()
 
     const fetchIncome = async () => {
       const response = await fetch(`http://localhost:8000/api/v1/income/by-month?month=${year}-${month}`)

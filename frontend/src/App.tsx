@@ -12,6 +12,7 @@ import ReportsPage from './pages/ReportsPage';
 import Accounts from './pages/Accounts';
 import AccountPage from './pages/Account';
 import CashFlow from './pages/CashFlow';
+import BudgetPage from './pages/Budget';
 
 function App() {
   return (
@@ -24,9 +25,10 @@ function App() {
           <Route path="/transactions" element={<TableView />} />
           <Route path="/charts" element={<ChartView />} />
           <Route path="/graphs" element={<Graph />} />
-          <Route path="/temp" element={<ChartPieLabel />} />
+          <Route path="/budget" element={<BudgetPage />} />
           <Route path="/reports" element={<ReportsPage />} />
           <Route path="/cashflow" element={<CashFlow />} />
+          <Route path="/temp" element={<ChartPieLabel />} />
         </Routes>
       </Layout>
     </Router>

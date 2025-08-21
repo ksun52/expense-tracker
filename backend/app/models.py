@@ -46,3 +46,18 @@ class Income(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(UTC))
     updated_at = Column(DateTime, default=lambda: datetime.now(
         UTC), onupdate=lambda: datetime.now(UTC))
+
+
+class Budget(Base):
+    __tablename__ = "Budget"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    # Budget details
+    category = Column(String, index=True, nullable=False, unique=True)
+    budget_amount = Column(Float, default=0.0)
+
+    # internal metadata
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime, default=lambda: datetime.now(
+        UTC), onupdate=lambda: datetime.now(UTC))

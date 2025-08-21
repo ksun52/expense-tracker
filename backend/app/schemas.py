@@ -46,3 +46,23 @@ class TravelResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class BudgetResponse(BaseModel):
+    id: int
+    category: str
+    budget_amount: float
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class BudgetCreate(BaseModel):
+    category: str
+    budget_amount: float
+
+
+class BudgetUpdate(BaseModel):
+    budget_amount: float
