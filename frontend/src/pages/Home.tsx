@@ -9,7 +9,6 @@ import {
 import {
   AreaChart,
   Area,
-  CartesianGrid,
   XAxis,
 } from "recharts"
 import {
@@ -18,9 +17,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { useEffect, useMemo, useState } from "react"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import dynamic from "next/dynamic"
+import { useMemo, useState } from "react"
+
+
 import { HomeHeader } from "@/components/headers/home-header"
 import {
   Select,

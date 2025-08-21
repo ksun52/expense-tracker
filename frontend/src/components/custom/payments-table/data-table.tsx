@@ -73,13 +73,11 @@ export default function DataTable<TData, TValue>({
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   // Custom state and functions for date filter
-  const [dateRange, setDateRange] = useState<{startDate: Date | null; endDate: Date | null;}>({ startDate: null, endDate: null });
   const [selectedDatePreset, setSelectedDatePreset] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
 
   // Generic handler
   const handlePresetClick = (key: string, start: Date, end: Date) => {
-    setDateRange({ startDate: start, endDate: end })
     setSelectedDatePreset(key)
 
     // apply filtering here
@@ -91,7 +89,7 @@ export default function DataTable<TData, TValue>({
 
   return (
     <div>
-        <div className="flex flex-wrap items-center gap-8 py-4">
+      <div className="flex flex-wrap items-center gap-8 py-4">
         {/* Text Search */}
         <Input
           placeholder="Search transactions..."
@@ -108,7 +106,7 @@ export default function DataTable<TData, TValue>({
             <Button variant="outline" className="ml-4">Select Category</Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={() => {
                 table.getColumn("category")?.setFilterValue("");
                 setSelectedCategory("all");
@@ -126,7 +124,7 @@ export default function DataTable<TData, TValue>({
               >
                 {cat.name}
                 {selectedCategory === cat.name && <Check className="w-4 h-4 text-muted-foreground" />}
-              </DropdownMenuItem> 
+              </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
@@ -222,9 +220,9 @@ export default function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}

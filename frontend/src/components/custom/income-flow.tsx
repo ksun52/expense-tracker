@@ -1,8 +1,8 @@
-import React from "react"
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import categoriesStyles from "@/data/categories.json"
-import { ChartTooltip, CustomExpenseChartTooltipContent } from "../ui/chart"
+
 
 // IncomeCompare (shadcn version)
 // ----------------------------------------------------

@@ -5,7 +5,7 @@ import { format, subMonths, addMonths } from 'date-fns';
 import { ChartHeader } from '@/components/custom/custom-pie-chart/ChartHeader';
 import { ChartFooter } from '@/components/custom/custom-pie-chart/ChartFooter';
 import { ChartContent } from '@/components/custom/custom-pie-chart/ChartContent';
-import { getAllCategories, getNotionColorCSS, CategoryOption } from '@/utils/categoryUtils';
+import { getAllCategories, getNotionColorCSS } from '@/utils/categoryUtils';
 
 interface CategoryData {
   category: string;

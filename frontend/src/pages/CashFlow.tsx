@@ -1,4 +1,4 @@
-import IncomeCompare, { CategoryKey, Entry, IncomeCompareDemo } from "../components/custom/income-flow";
+import IncomeCompare, { CategoryKey, Entry } from "../components/custom/income-flow";
 import { useState, useEffect } from "react";
 
 

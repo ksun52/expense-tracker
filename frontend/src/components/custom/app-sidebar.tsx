@@ -1,4 +1,4 @@
-import { Calendar, ChartLine, ChartPie, ChevronDown, ChevronUp, Home, Inbox, Plus, Search, Settings, Table, User2, ClipboardPlus } from "lucide-react"
+import { ChartLine, ChartPie, ChevronDown, ChevronUp, Home, Plus, Settings, Table, User2, ClipboardPlus } from "lucide-react"
 
 import {
   Sidebar,
@@ -59,7 +59,7 @@ const items = [
 export function AppSidebar() {
   return (
     <Sidebar>
-      <SidebarHeaderComp/>
+      <SidebarHeaderComp />
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Applications</SidebarGroupLabel>
@@ -78,9 +78,9 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroupExample/>
+        <SidebarGroupExample />
       </SidebarContent>
-      <SidebarFooterComp/>
+      <SidebarFooterComp />
       <SidebarRail />
     </Sidebar>
   )
@@ -88,7 +88,7 @@ export function AppSidebar() {
 
 function SidebarHeaderComp() {
   return (
-    
+
     <SidebarHeader>
       <SidebarMenu>
         <SidebarMenuItem>
@@ -159,13 +159,13 @@ function SidebarGroupExample() {
   )
 }
 
-function SidebarMenuButtonExample() {
-  return ( 
-    <SidebarMenuButton asChild>
-      <a href="#">
-        <Home />
-        <span>Home</span>
-      </a>
-    </SidebarMenuButton>
-  )
-}
+// function SidebarMenuButtonExample() {
+//   return (
+//     <SidebarMenuButton asChild>
+//       <a href="#">
+//         <Home />
+//         <span>Home</span>
+//       </a>
+//     </SidebarMenuButton>
+//   )
+// }

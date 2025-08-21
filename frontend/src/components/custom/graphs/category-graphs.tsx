@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useEffect, useState } from "react";
+
 import categories from "@/data/categories.json";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { format, parse } from "date-fns";
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../../ui/chart";
-import { TrendingDown } from "lucide-react";
-import { TrendingUp } from "lucide-react";
+
+
+import { ChartConfig } from "../../ui/chart";
+
 import ReusableChartCard from "./reusable-chart-card";
 
 const chartConfig = {

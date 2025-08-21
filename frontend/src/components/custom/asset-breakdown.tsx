@@ -4,7 +4,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card"
 import {
   Accordion,
@@ -12,7 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Progress } from "@/components/ui/progress"
+
 import { Link } from "react-router-dom"
 
 import { cn } from "@/lib/utils"
