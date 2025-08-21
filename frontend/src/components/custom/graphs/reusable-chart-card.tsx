@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ReferenceLine } from "recharts";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../../ui/chart";
 import { format, parse } from "date-fns";
@@ -17,6 +17,7 @@ interface ReusableChartCardProps {
   isTrendingUp: boolean;
   trendUp: ReactNode;
   trendDown: ReactNode;
+  budget?: number;
   className?: string;
 }
 
@@ -28,6 +29,7 @@ export default function ReusableChartCard({
   isTrendingUp,
   trendUp,
   trendDown,
+  budget,
   className = "",
 }: ReusableChartCardProps) {
 
@@ -66,6 +68,19 @@ export default function ReusableChartCard({
               tickMargin={8}
               tickFormatter={(value: number) => `$${Number(value).toFixed(2)}`}
             />
+            {budget !== undefined && (
+              <ReferenceLine
+                y={budget}
+                stroke="red"
+                strokeDasharray="4 4"
+                label={{
+                  position: "center",
+                  value: `Budget: $${budget}`,
+                  fill: "red",
+                  fontSize: 12,
+                }}
+              />
+            )}
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent

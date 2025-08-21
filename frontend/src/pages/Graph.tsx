@@ -2,6 +2,7 @@
 
 import { TrendingUp, TrendingDown } from "lucide-react"
 import { useState, useEffect, useMemo } from "react"
+import { getAllCategories } from "@/utils/categoryUtils"
 
 import {
   ChartConfig,
@@ -43,9 +44,22 @@ interface MonthlyData {
   amount: number;
 }
 
+type GraphBudgetData = {
+  budget: number
+}
+
+const initialBudgets: Record<string, GraphBudgetData> = getAllCategories().reduce(
+  (acc, cat) => {
+    acc[cat.name] = { budget: 0 }
+    return acc
+  },
+  {} as Record<string, GraphBudgetData>
+)
+
 export default function MonthlyTrends() {
   const [chartData, setChartData] = useState<MonthlyData[]>([]);
   const [range, setRange] = useState<RangeKey>("6 Months")
+  const [budgets, setBudgets] = useState<Record<string, GraphBudgetData>>(initialBudgets)
 
   const fetchMonthlyData = async () => {
     try {
@@ -64,6 +78,39 @@ export default function MonthlyTrends() {
       console.error('Error fetching monthly data:', error);
     }
   };
+
+  useEffect(() => {
+    const fetchBudgetData = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/v1/budget/")
+        const budgetData = await response.json()
+
+        // Build a map from API
+        const apiBudgets: Record<string, GraphBudgetData> = budgetData.reduce(
+          (acc: Record<string, GraphBudgetData>, item: any) => {
+            acc[item.category] = { budget: item.budget_amount }
+            return acc
+          },
+          {}
+        )
+
+        // Merge into current state
+        setBudgets(prev => {
+          const merged = { ...prev }
+          for (const [cat, data] of Object.entries(apiBudgets)) {
+            merged[cat] = data // overwrite if exists, add if new
+          }
+          return merged
+        })
+      } catch (error) {
+        console.error("Error fetching budget data:", error)
+      }
+    }
+
+    fetchBudgetData()
+  }, [])
+
+  const totalBudget = Object.values(budgets).reduce((sum, data) => sum + data.budget, 0)
 
   useEffect(() => {
     fetchMonthlyData();
@@ -111,6 +158,7 @@ export default function MonthlyTrends() {
         description="Lifetime Spending"
         chartData={chartData}
         chartConfig={chartConfig}
+        budget={totalBudget}
         className="mt-6"
         isTrendingUp={trend.isPositive}
         trendUp={
@@ -127,7 +175,7 @@ export default function MonthlyTrends() {
         }
       />
 
-      <CategoryGraphs monthRange={dateRanges[range]} />
+      <CategoryGraphs monthRange={dateRanges[range]} budgets={budgets} />
     </div>
   )
 }

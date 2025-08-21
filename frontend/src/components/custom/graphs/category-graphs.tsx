@@ -26,11 +26,16 @@ interface CategoryMonthlyData {
   };
 }
 
-type CategoryGraphsProps = {
-  monthRange: number;
+type GraphBudgetData = {
+  budget: number
 }
 
-export default function CategoryGraphs({ monthRange }: CategoryGraphsProps) {
+type CategoryGraphsProps = {
+  monthRange: number;
+  budgets: Record<string, GraphBudgetData>;
+}
+
+export default function CategoryGraphs({ monthRange, budgets }: CategoryGraphsProps) {
   const [data, setData] = useState<CategoryMonthlyData>({});
   const [months, setMonths] = useState<string[]>([]);
 
@@ -90,6 +95,7 @@ export default function CategoryGraphs({ monthRange }: CategoryGraphsProps) {
             description={`Monthly spending for "${cat.name}"`}
             chartData={chartData}
             chartConfig={chartConfig}
+            budget={budgets[cat.name]?.budget}
             className=""
             isTrendingUp={trend.isPositive}
             trendUp={<span className="text-red-600">▲ {trend.percentage}% increase</span>}
