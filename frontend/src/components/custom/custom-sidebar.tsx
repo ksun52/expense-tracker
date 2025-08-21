@@ -24,14 +24,14 @@ const navItems = [
   { label: 'Accounts', icon: Layers, to: '/accounts' },
   { label: 'Transactions', icon: CreditCard, to: '/transactions' },
   { label: 'Cash Flow', icon: BarChart2, to: '/cashflow' },
-  { label: 'Reports', icon: PieChart, to: '/reports' },
   { label: 'Budget', icon: Map, to: '/budget' },
+  { label: 'Graphs', icon: ChartPie, to: '/graphs' },
+  { label: 'Charts', icon: ChartLine, to: '/charts' },
+  { label: 'Advice', icon: ThumbsUp, to: '/advice' },
+  { label: 'Reports', icon: PieChart, to: '/reports' },
   { label: 'Recurring', icon: Calendar, to: '/recurring' },
   { label: 'Goals', icon: Target, to: '/goals' },
   { label: 'Investments', icon: TrendingUp, to: '/investments' },
-  { label: 'Advice', icon: ThumbsUp, to: '/advice' },
-  { label: 'Charts', icon: ChartLine, to: '/charts' },
-  { label: 'Graphs', icon: ChartPie, to: '/graphs' },
 ]
 
 export function Sidebar() {
@@ -68,11 +68,10 @@ export function Sidebar() {
               <Link
                 key={label}
                 to={to}
-                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive
+                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
                     ? 'bg-muted text-primary'
                     : 'hover:bg-muted text-muted-foreground'
-                }`}
+                  }`}
                 onClick={() => setOpen(false)} // auto-close on mobile
               >
                 <Icon className="w-4 h-4" />
