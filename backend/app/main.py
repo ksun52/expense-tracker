@@ -1,6 +1,9 @@
+import os
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+
 
 from pydantic import BaseModel
 from typing import List
@@ -22,8 +25,11 @@ app = FastAPI(
 
 # TODO: add production origins (accepted frontend origins that access backend)
 origins = [
+    "null",                   # <-- required for file://
     "http://localhost:3000",
     "http://localhost:5173",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
 ]
 
 # Set up CORS middleware
@@ -49,3 +55,7 @@ async def root():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+    # python -m app.main
+
+    # uvicorn app.main:app --reload --port 8000
